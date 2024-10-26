@@ -14,7 +14,6 @@ function UploadProduct() {
             id: uuidv4(),
             variantName: "", variantDesc: "", variantPrice: 0, foodType: "",
             variantPics: { variantPic_1: "", variantPic_2: "", variantPic_3: "", variantPic_4: "" },
-            foodType: "",
             allIndiaDelivery: false
         }
     ]);

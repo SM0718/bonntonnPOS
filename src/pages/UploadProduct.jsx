@@ -4,14 +4,17 @@ import Input from '../components/Input';
 import Button from '../components/Button';
 import Cross from '../svg/Cross';
 import Plus from '../svg/Plus';
-import { v4 as uuidv4 } from 'uuid';
 
 function UploadProduct() {
 
+    const getRandomId = () => {
+        const date = new Date()
+        return date.getTime() + date.getMilliseconds() + date.getSeconds()
+    }
     const { register, handleSubmit, reset, formState: { errors } } = useForm();
     const [variants, setVariants] = useState([
         {
-            id: uuidv4(),
+            id: getRandomId(),
             variantName: "", variantDesc: "", variantPrice: 0, foodType: "",
             variantPics: { variantPic_1: "", variantPic_2: "", variantPic_3: "", variantPic_4: "" },
             allIndiaDelivery: false
@@ -20,7 +23,7 @@ function UploadProduct() {
 
     const [boxes, setBoxes] = useState([
         {
-            boxId: uuidv4(),
+            boxId: getRandomId(),
             boxType: "",
             boxPrice: 0
         }
@@ -56,7 +59,7 @@ function UploadProduct() {
         setBoxes((prevBoxes) => [
             ...prevBoxes,
             {
-                boxId: uuidv4(),
+                boxId: getRandomId(),
                 boxType: "",
                 boxPrice: 0
             }
@@ -120,7 +123,7 @@ function UploadProduct() {
 
     const resetForm = () => {
         setVariants([{
-            id: uuidv4(),
+            id: getRandomId(),
             variantName: "", variantDesc: "", variantPrice: 0, foodType: "",
             variantPics: { variantPic_1: "", variantPic_2: "", variantPic_3: "", variantPic_4: "" },
             allIndiaDelivery: false
@@ -133,7 +136,7 @@ function UploadProduct() {
         setVariants((prevVariants) => [
             ...prevVariants,
             {
-                id: uuidv4(),
+                id: getRandomId(),
                 variantName: "", 
                 variantDesc: "", 
                 variantPrice: 0, 

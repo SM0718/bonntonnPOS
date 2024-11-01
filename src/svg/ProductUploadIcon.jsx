@@ -2,21 +2,9 @@ import React from 'react'
 
 function ProductUploadIcon() {
   return (
-    <svg width="30px" height="30px" viewBox="0 0 20 20" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlnsXlink="http://www.w3.org/1999/xlink">
-    
-    <title>product_hunt [#135]</title>
-    <defs>
-
-</defs>
-    <g id="Page-1" stroke="none" strokeWidth="1" fill="none" fillRule="evenodd">
-        <g id="Dribbble-Light-Preview" transform="translate(-420.000000, -7559.000000)" fill="#000000">
-            <g id="icons" transform="translate(56.000000, 160.000000)">
-                <path d="M376.5,7408 C376.5,7408.69 375.957,7409 375.289,7409 L373,7409 L373,7407 L375.289,7407 C375.957,7407 376.5,7407.31 376.5,7408 M375.27,7411 L373,7411 L373,7413 L371,7413 L371,7405 L375.27,7405 C376.777,7405 378,7406.473 378,7408 C378,7409.488 376.777,7410 375.27,7411 M374,7399 C368.477,7399 364,7403.477 364,7409 C364,7414.523 368.477,7419 374,7419 C379.523,7419 384,7414.523 384,7409 C384,7403.477 379.523,7399 374,7399" id="product_hunt-[#135]">
-
-</path>
-            </g>
-        </g>
-    </g>
+    <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 48 48" fill="none">
+  <path d="M34 18.0039C38.35 18.0279 40.706 18.2219 42.242 19.7579C44 21.5159 44 24.3439 44 29.9999V31.9999C44 37.6579 44 40.4859 42.242 42.2439C40.486 43.9999 37.656 43.9999 32 43.9999H16C10.344 43.9999 7.514 43.9999 5.758 42.2439C4 40.4839 4 37.6579 4 31.9999V29.9999C4 24.3439 4 21.5159 5.758 19.7579C7.294 18.2219 9.65 18.0279 14 18.0039" stroke="#E6E6E6" stroke-width="3" stroke-linecap="round"/>
+  <path d="M24 30V4M24 4L30 11M24 4L18 11" stroke="#E6E6E6" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
 </svg>
   )
 }

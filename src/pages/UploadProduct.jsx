@@ -4,6 +4,7 @@ import Input from '../components/Input';
 import Button from '../components/Button';
 import Cross from '../svg/Cross';
 import Plus from '../svg/Plus';
+import UpArrow from '../svg/UpArrow'
 
 function UploadProduct() {
 
@@ -79,39 +80,84 @@ function UploadProduct() {
     
     
 
+    // const uploadProduct = async (data) => {
+    //     setIsSubmitting(true);
+    //     // console.log(variants)
+    //     try {
+    //         const formData = new FormData();
+    //         formData.append('catagory', data.catagory);
+
+    //         boxes.forEach((box, index) => {
+    //             formData.append(`boxSize[${index}][boxId]`, box.boxId)
+    //             formData.append(`boxSize[${index}][boxType]`, box.boxType)
+    //             formData.append(`boxSize[${index}][boxPrice]`, box.boxPrice)
+    //         })
+
+    //         variants.forEach((variant, index) => {
+    //             formData.append(`variantPic_1`, variant.variantPics.variantPic_1);
+    //             formData.append(`variantPic_2`, variant.variantPics.variantPic_2);
+    //             formData.append(`variantPic_3`, variant.variantPics.variantPic_3);
+    //             formData.append(`variantPic_4`, variant.variantPics.variantPic_4);
+    //             console.log(formData);
+    //             // Append each variant's details directly as JSON objects
+    //             formData.append(`variant[${index}][id]`, variant.id);
+    //             formData.append(`variant[${index}][variantName]`, variant.variantName);
+    //             formData.append(`variant[${index}][variantDesc]`, variant.variantDesc);
+    //             formData.append(`variant[${index}][variantPrice]`, variant.variantPrice);
+    //             formData.append(`variant[${index}][foodType]`, variant.foodType);
+    //         });
+
+    //         // console.log(formData);
+    //         const response = await fetch('api/v1/products/add-product', {
+    //             method: 'POST',
+    //             body: formData,
+    //         });
+
+    //         const result = await response.json();
+    //         console.log('Printing Result', result);
+    //     } catch (error) {
+    //         console.error('Error uploading product:', error);
+    //     } finally {
+    //         setIsSubmitting(false);
+    //     }
+    // };
+
     const uploadProduct = async (data) => {
         setIsSubmitting(true);
-        // console.log(variants)
         try {
             const formData = new FormData();
-            formData.append('catagory', data.catagory);
-
-            boxes.forEach((box, index) => {
-                formData.append(`boxSize[${index}][boxId]`, box.boxId)
-                formData.append(`boxSize[${index}][boxType]`, box.boxType)
-                formData.append(`boxSize[${index}][boxPrice]`, box.boxPrice)
-            })
-
+    
+            // Append variant fields (non-file fields first)
             variants.forEach((variant, index) => {
-                formData.append(`variantPic_1`, variant.variantPics.variantPic_1);
-                formData.append(`variantPic_2`, variant.variantPics.variantPic_2);
-                formData.append(`variantPic_3`, variant.variantPics.variantPic_3);
-                formData.append(`variantPic_4`, variant.variantPics.variantPic_4);
-                console.log(formData);
-                // Append each variant's details directly as JSON objects
                 formData.append(`variant[${index}][id]`, variant.id);
                 formData.append(`variant[${index}][variantName]`, variant.variantName);
                 formData.append(`variant[${index}][variantDesc]`, variant.variantDesc);
                 formData.append(`variant[${index}][variantPrice]`, variant.variantPrice);
                 formData.append(`variant[${index}][foodType]`, variant.foodType);
             });
+    
+            // Append variant images (file fields last)
+            variants.forEach((variant, index) => {
+                formData.append(`variantPic_1`, variant.variantPics.variantPic_1);
+                formData.append(`variantPic_2`, variant.variantPics.variantPic_2);
+                formData.append(`variantPic_3`, variant.variantPics.variantPic_3);
+                formData.append(`variantPic_4`, variant.variantPics.variantPic_4);
+            });
 
-            // console.log(formData);
+            formData.append('catagory', data.catagory);
+    
+            // Append boxes (non-file fields)
+            boxes.forEach((box, index) => {
+                formData.append(`boxSize[${index}][boxId]`, box.boxId);
+                formData.append(`boxSize[${index}][boxType]`, box.boxType);
+                formData.append(`boxSize[${index}][boxPrice]`, box.boxPrice);
+            });
+    
             const response = await fetch('api/v1/products/add-product', {
                 method: 'POST',
                 body: formData,
             });
-
+    
             const result = await response.json();
             console.log('Printing Result', result);
         } catch (error) {
@@ -120,6 +166,7 @@ function UploadProduct() {
             setIsSubmitting(false);
         }
     };
+    
 
     const resetForm = () => {
         setVariants([{
@@ -128,6 +175,12 @@ function UploadProduct() {
             variantPics: { variantPic_1: "", variantPic_2: "", variantPic_3: "", variantPic_4: "" },
             allIndiaDelivery: false
         }]);
+
+        setBoxes([{
+            boxId: getRandomId(),
+            boxType: "",
+            boxPrice: 0
+        }])
         reset();
     };
 
@@ -183,15 +236,51 @@ function UploadProduct() {
 
     return (
         <div className='flex flex-col items-center justify-center gap-2 py-8 mx-auto'>
-            <Button onClick={addVariant} className='border bg-slate-300 p-2 rounded-xl'>
-                ADD
-            </Button>
-            <form onSubmit={handleSubmit(uploadProduct)} encType="multipart/form-data">
+
+        <div className='w-full flex justify-between'>
+            <p className='text-[32px] trajan'>Add New Product</p>
+            <Button onClick={resetForm} className={'text-[#F00] text-[22px] times'}>Discard Changes</Button>
+        </div>
+            
+            <form onSubmit={handleSubmit(uploadProduct)}>
 
                 <div>
+
+                        <div className='flex flex-col gap-2'>
+                        <label className='times'>Category</label>
+                        <Input
+                            type='text'
+                            {...register(`catagory`, { required: 'Category is required' })}
+                            className='w-64 border-2 p-1'
+                            placeholder="Category"
+                        />
+                        {errors[`catagory`] && <p>{errors[`catagory`].message}</p>}
+                        </div>
+
+                        <div className='flex justify-between items-center mt-8'>
+                            <p className='trajan text-[28px]'>Varient Descriptions</p>
+
+                            <div className='flex gap-4'>
+                            <Button type='submit' className={`bg-[#285EFE] p-3 ${isSubmitting && 'cursor-wait'}`} disabled={isSubmitting}>
+                                {isSubmitting ? 'Upload...' : <span className='flex gap-2'>
+                                        <UpArrow />
+                                        <p className='text-white times'>Upload Product</p>
+                                    </span>}
+                            </Button>
+
+                            <Button onClick={addVariant} className='text-[#285EFE] times'>
+                                Add Varient
+                            </Button>
+                            </div>
+                        </div>
+                        
                     <div className='flex flex-col items-center gap-4 py-8'>
                         {variants.map((variant, index) => (
-                            <div className='bg-[#d3d2d2] flex flex-col gap-2 p-8 rounded-xl' key={variant.id}>
+                            <div className='bg-[#E6E6E6] flex flex-col gap-2 p-8 rounded-xl relative' key={variant.id}>
+
+                                <p onClick={(e) => deleteVariant(e, variant.id)}
+                                   className='absolute top-2 right-2 cursor-pointer'><Cross /></p>
+
                                 <div className='flex flex-col justify-center gap-4'>
                                     <div className='flex justify-center gap-4'>
                                     {/* Image 1 */}
@@ -295,7 +384,7 @@ function UploadProduct() {
                                         {errors[`variantName[${index}]`] && <p>{errors[`variantName[${index}]`].message}</p>}
 
                                         <Input
-                                            type='text'
+                                            type='textarea'
                                             {...register(`variantDesc[${index}]`, { required: 'Variant Desc is required' })}
                                             className='border-2 p-1'
                                             placeholder="Variant Desc"
@@ -339,9 +428,9 @@ function UploadProduct() {
                                         {/* Additional variant details */}
                                     </div>
 
-                                    <Button onClick={(e) => deleteVariant(e, variant.id)} className='bg-slate-400 p-1 rounded-full w-[300px] mx-auto'>
+                                    {/* <Button onClick={(e) => deleteVariant(e, variant.id)} className='bg-slate-400 p-1 rounded-full w-[300px] mx-auto'>
                                         Delete
-                                    </Button>
+                                    </Button> */}
                                 </div>
                                 
                             </div>
@@ -349,13 +438,6 @@ function UploadProduct() {
                     
                         {/* Similar code for box fields */}
 
-                        <Input
-                            type='text'
-                            {...register(`catagory`, { required: 'Category is required' })}
-                            className='border-2 p-1'
-                            placeholder="Category"
-                        />
-                        {errors[`catagory`] && <p>{errors[`catagory`].message}</p>}
                         <div className='flex flex-col gap-2'>
                         {
                             boxes.map((item, index) => 
@@ -390,9 +472,7 @@ function UploadProduct() {
                             )
                         }
                     </div>
-                        <Button type='submit' className={`bg-slate-400 p-4 ${isSubmitting && 'cursor-wait'}`} disabled={isSubmitting}>
-                            {isSubmitting ? 'Upload...' : 'Upload Product'}
-                        </Button>
+                       
                     </div>
                     
                     

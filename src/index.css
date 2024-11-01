@@ -1,3 +1,22 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+@font-face {
+    font-family: 'trajan'; /* Name of the font */
+    src: url('./trajan.ttf') format('truetype'); /* Path to the font */
+  }
+
+  .trajan {
+    font-family: 'trajan', sans-serif; /* fallback to sans-serif if Trajan is not found */
+  }
+
+  @font-face {
+    font-family: 'times'; /* Name of the font */
+    src: url('./timesNewRoman.ttf') format('truetype'); /* Path to the font */
+  }
+
+  .times {
+    font-family: 'times', serif;
+  }  
+  

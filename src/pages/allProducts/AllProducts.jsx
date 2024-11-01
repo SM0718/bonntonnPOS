@@ -2,7 +2,7 @@ import React from 'react'
 
 function AllProducts() {
   return (
-    <div className='mx-auto'>AllProducts</div>
+    <h1>Hello</h1>
   )
 }
 

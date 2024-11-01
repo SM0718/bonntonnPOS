@@ -7,10 +7,13 @@ import './index.css'
 import { Route, RouterProvider, createBrowserRouter, createRoutesFromElements } from 'react-router-dom'
 import {
   UploadProduct,
-  AllProducts,
+  Products,
+  CuponCode,
   ProductAnalytics,
   Orders
 } from './pages/index.js'
+
+import AllProducts from './pages/allProducts/AllProducts.jsx'
 
 
 const router = createBrowserRouter(
@@ -18,7 +21,10 @@ const router = createBrowserRouter(
     <Route path='/' element={<App />}>
       <Route path='/' element={<ProductAnalytics />}/>
       <Route path='/product-upload' element={<UploadProduct />}/>
-      <Route path='/all-products' element={<AllProducts />}/>
+      <Route path='/products' element={<Products />}>
+        <Route path='/products' element={<AllProducts />}/>
+        <Route path='/products/cupon-codes' element={<CuponCode />}/>
+      </Route>
       <Route path='/orders' element={<Orders />}/>
     </Route>
   ))

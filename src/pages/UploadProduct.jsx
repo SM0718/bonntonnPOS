@@ -145,6 +145,7 @@ function UploadProduct() {
             });
 
             formData.append('catagory', data.catagory);
+            formData.append('allIndiaDelivery', data.allIndiaDelivery === "true");
     
             // Append boxes (non-file fields)
             boxes.forEach((box, index) => {
@@ -246,7 +247,8 @@ function UploadProduct() {
 
                 <div>
 
-                        <div className='flex flex-col gap-2'>
+                    <div>
+                    <div className='flex flex-col gap-2'>
                         <label className='times'>Category</label>
                         <Input
                             type='text'
@@ -255,13 +257,21 @@ function UploadProduct() {
                             placeholder="Category"
                         />
                         {errors[`catagory`] && <p>{errors[`catagory`].message}</p>}
-                        </div>
+                    </div>
+
+                    <div>
+                        {
+
+                        }
+                    </div>
+                    </div>
+                        
 
                         <div className='flex justify-between items-center mt-8'>
                             <p className='trajan text-[28px]'>Varient Descriptions</p>
 
                             <div className='flex gap-4'>
-                            <Button type='submit' className={`bg-[#285EFE] p-3 ${isSubmitting && 'cursor-wait'}`} disabled={isSubmitting}>
+                            <Button type='submit' className={`bg-[#285EFE] p-3 rounded-xl text-white ${isSubmitting && 'cursor-wait'}`} disabled={isSubmitting}>
                                 {isSubmitting ? 'Upload...' : <span className='flex gap-2'>
                                         <UpArrow />
                                         <p className='text-white times'>Upload Product</p>
@@ -413,30 +423,17 @@ function UploadProduct() {
                                     </select>
                                     {errors[`foodType[${index}]`] && <p>{errors[`foodType[${index}]`].message}</p>}
 
-                                    <select
-                                        {...register(`allIndiaDelivery[${index}]`, { required: 'Delivery Range is required' })}
-                                        className="border-1 p-1"
-                                        onChange={(e) => handleInputChange(e, variant.id, 'allIndiaDelivery')}
-                                    >
-                                        <option value="" disabled>Select an option</option>
-                                        <option value="false">False</option>
-                                        <option value="true">True</option>
-                                    </select>
-                                    {errors[`allIndiaDelivery[${index}]`] && <p>{errors[`allIndiaDelivery[${index}]`].message}</p>}
-                            
+                                    
 
-                                        {/* Additional variant details */}
                                     </div>
-
-                                    {/* <Button onClick={(e) => deleteVariant(e, variant.id)} className='bg-slate-400 p-1 rounded-full w-[300px] mx-auto'>
-                                        Delete
-                                    </Button> */}
                                 </div>
                                 
                             </div>
                         ))}
                     
                         {/* Similar code for box fields */}
+
+                        <div className='w-full flex justify-between items-start gap-2'>
 
                         <div className='flex flex-col gap-2'>
                         {
@@ -471,10 +468,25 @@ function UploadProduct() {
                                 </div>
                             )
                         }
+                        </div>
+                    <div className='flex gap-2'>
+                        <p className='text-[20px] times'>Pan-India Delivery</p>
+                        <select
+                            {...register(`allIndiaDelivery`, { required: 'Delivery Range is required' })}
+                            className="border-1 p-1"
+                        >
+                            <option value="" disabled>Select an option</option>
+                            <option value="false">False</option>
+                            <option value="true">True</option>
+                        </select>
+                        {errors[`allIndiaDelivery`] && <p>{errors[`allIndiaDelivery`].message}</p>}
                     </div>
+                    </div>
+
+                    
+                   
                        
                     </div>
-                    
                     
                 </div>
             </form>

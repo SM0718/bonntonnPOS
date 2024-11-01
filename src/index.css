@@ -4,7 +4,7 @@
 
 @font-face {
     font-family: 'trajan'; /* Name of the font */
-    src: url('./trajan.ttf') format('truetype'); /* Path to the font */
+    src: url('./assets/trajan.ttf') format('truetype'); /* Path to the font */
   }
 
   .trajan {
@@ -13,7 +13,7 @@
 
   @font-face {
     font-family: 'times'; /* Name of the font */
-    src: url('./timesNewRoman.ttf') format('truetype'); /* Path to the font */
+    src: url('./assets/timesNewRoman.ttf') format('truetype'); /* Path to the font */
   }
 
   .times {

@@ -195,6 +195,7 @@ function UploadProduct() {
                     autoClose: 3000,
                     theme: "dark",
                 })
+                resetForm()
             }
             console.log('Printing Result', result);
         } catch (error) {
@@ -324,7 +325,7 @@ function UploadProduct() {
 
                             <div className='flex gap-4'>
                             <Button type='submit' className={`bg-[#285EFE] p-3 rounded-xl text-white ${isSubmitting && 'cursor-wait'}`} disabled={isSubmitting}>
-                                {isSubmitting ? 'Upload...' : <span className='flex gap-2'>
+                                {isSubmitting ? <span className='flex gap-2'>Uploading...</span> : <span className='flex gap-2'>
                                         <UpArrow />
                                         <p className='text-white times'>Upload Product</p>
                                     </span>}
@@ -466,6 +467,7 @@ function UploadProduct() {
                                     <select
                                         {...register(`foodType[${index}]`, { required: 'Food Type is required' })}
                                         className="border-1 p-1"
+                                        defaultValue=""
                                         onChange={(e) => handleInputChange(e, variant.id, 'foodType')}
                                     >
                                         <option value="" disabled>Select an option</option>
@@ -494,7 +496,7 @@ function UploadProduct() {
                                     <div className='flex gap-2'>
                                      <Input
                                             type='text'
-                                            {...register(`boxType[${index}]`, { required: 'Box Type is required' })}
+                                            {...register(`boxType[${index}]`)}
                                             className='border-2 p-1'
                                             placeholder="Box Type"
                                             onChange={(e) => handleBoxInputChange(e, item.boxId, 'boxType')}
@@ -504,7 +506,7 @@ function UploadProduct() {
 
                                     <Input
                                             type='number'
-                                            {...register(`boxPrice[${index}]`, { required: 'Box Price is required' })}
+                                            {...register(`boxPrice[${index}]`)}
                                             className='border-2 p-1'
                                             placeholder="Box Price"
                                             onChange={(e) => handleBoxInputChange(e, item.boxId, 'boxPrice')}
@@ -526,6 +528,7 @@ function UploadProduct() {
                         <select
                             {...register(`allIndiaDelivery`, { required: 'Delivery Range is required' })}
                             className="border-1 p-1"
+                            defaultValue=""
                         >
                             <option value="" disabled>Select an option</option>
                             <option value="false">False</option>

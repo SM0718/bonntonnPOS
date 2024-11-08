@@ -110,8 +110,10 @@ function AllProducts() {
 
     productDelete()
   }, [deleteProduct])
+
   const handleReset = () => {
     reset();
+    setSelectedCatagory("")
     handleFilter()
   };
 
@@ -121,10 +123,10 @@ function AllProducts() {
         <form onSubmit={handleSubmit(handleFilter)} className='flex gap-2'>
           
           <select
-              {...register(`catagory`, { required: 'Category is required' })}
+              {...register(`catagory`)}
               className="w-64 border-2 p-1"
               value={selectedCatagory}
-               onChange={(e) => setSelectedCatagory(e.target.value)}
+              onChange={(e) => setSelectedCatagory(e.target.value)}
           >
               <option value="" disabled>Select an option</option>
               {catagoryList.map(item => (

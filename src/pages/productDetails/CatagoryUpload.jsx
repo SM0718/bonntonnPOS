@@ -1,12 +1,15 @@
 import React, { useState, useEffect } from 'react'
 import Button from '../../components/Button'
+import Input from '../../components/Input';
 import { toast } from 'react-toastify'
+import { useForm } from "react-hook-form";
 
 function CatagoryUpload() {
 
   const [data, setData] = useState([])
   const [reloadData, setReloadData] = useState(false)
   const [showModal, setShowModal] = useState(false)
+  const { register, handleSubmit, reset, formState: { errors } } = useForm();
 
   useEffect(() => {
     async function fetchData() {
@@ -34,7 +37,15 @@ const deleteCatagory = async(catagoryId, catagory) => {
     })
 
     if(response.ok) {
-      const data = await response.json()
+      console.log(response)
+      if(response.status === 204) {
+        toast.error(`${catagory} Linked With Product`, {
+          position: "top-right",
+          autoClose: 2000,
+          theme: "dark",
+      })
+      } else {
+        const data = await response.json()
       if(data.success === true) {
         setReloadData(!reloadData)
         toast.success(`${catagory} Deleted Successfully`, {
@@ -43,13 +54,51 @@ const deleteCatagory = async(catagoryId, catagory) => {
           theme: "dark",
       })
       }
+      }
       
     }
   } catch (error) {
-    console.log(error)
+    toast.error(error, {
+      position: "top-right",
+      autoClose: 2000,
+      theme: "dark",
+  })
   }
 }
 
+const addCatagory = async(data) => {
+  try {
+    const response = await fetch(`/api/v1/catagory/add-catagory?catagory=${data.catagory}`, {
+      method: 'POST'
+    })
+
+    if(response.ok) {
+      if (response.status === 204) {
+        toast.info(`${data.catagory} Already Exist`, {
+          position: "top-right",
+          autoClose: 2000,
+          theme: "dark"
+        })
+        reset()
+      } else {
+          toast.success(`${data.catagory} Added Successfully`, {
+            position: "top-right",
+            autoClose: 2000,
+            theme: "dark"
+          })
+          setReloadData(!reloadData)
+          reset()
+          setShowModal(false)
+      } 
+    }
+  } catch (error) {
+    toast.error(error, {
+      position: "top-right",
+      autoClose: 2000,
+      theme: "dark"
+    })
+  }
+}
 
   return (
     <div className="w-full py-8 relative">
@@ -58,9 +107,29 @@ const deleteCatagory = async(catagoryId, catagory) => {
         <h1 className='trajan text-[28px]'>
           Catagory Details
         </h1>
-        <Button onClick={() => setShowModal(true)} className={`bg-[#285EFE] p-3 rounded-xl text-white`}>
+        <div className='relative'>
+          <Button onClick={() => setShowModal(!showModal)} className={`bg-[#285EFE] p-3 rounded-xl text-white`}>
             Add New Catagory               
-        </Button>
+          </Button>
+
+          {
+            showModal && <div className='w-[170px] h-[120px] my-2 rounded-xl absolute bg-slate-200'>
+                  <form onSubmit={handleSubmit(addCatagory)} className='w-5/6 h-full py-4 mx-auto flex flex-col justify-between'>
+                    <Input
+                        type='text'
+                        {...register(`catagory`, { required: 'Catagory is required' })}
+                        className='w-full border-2 p-1 rounded-xl'
+                        placeholder="Catagory"
+                    />
+                    {errors[`catagory`] && <p>{errors[`catagory`].message}</p>}
+                    <Button type="submit" className={`bg-[#285EFE] p-2 text-[15px] rounded-xl text-white`}>
+                        Add Catagory               
+                    </Button>
+                  </form>
+              </div>
+          }
+        </div>
+        
       </div>
 
       <div className='w-full flex justify-center'>

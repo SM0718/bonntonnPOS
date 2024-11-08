@@ -10,7 +10,9 @@ import {
   Products,
   CuponCode,
   ProductAnalytics,
-  Orders
+  Orders,
+  ProductDetails,
+  CatagoryUpload
 } from './pages/index.js'
 
 import AllProducts from './pages/allProducts/AllProducts.jsx'
@@ -20,7 +22,10 @@ const router = createBrowserRouter(
   createRoutesFromElements(
     <Route path='/' element={<App />}>
       <Route path='/' element={<ProductAnalytics />}/>
-      <Route path='/product-upload' element={<UploadProduct />}/>
+      <Route path='/product-upload' element={<ProductDetails />}>
+        <Route path='/product-upload' element={<UploadProduct />}/>
+        <Route path='/product-upload/catagory-upload' element={<CatagoryUpload />}/>
+      </Route>
       <Route path='/products' element={<Products />}>
         <Route path='/products' element={<AllProducts />}/>
         <Route path='/products/cupon-codes' element={<CuponCode />}/>
@@ -34,5 +39,10 @@ ReactDOM.createRoot(document.getElementById('root')).render(
     {/* <Provider store={store}> */}
        <RouterProvider router={router} />
     {/* </Provider> */}
-  </React.StrictMode>,
+  </React.StrictMode>
 )
+
+// ReactDOM.createRoot(document.getElementById('root')).render(
+//   // Removing <React.StrictMode> wrapper to disable strict mode
+//   <RouterProvider router={router} />
+// );

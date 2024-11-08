@@ -1,10 +1,12 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useForm } from "react-hook-form";
-import Input from '../components/Input';
-import Button from '../components/Button';
-import Cross from '../svg/Cross';
-import Plus from '../svg/Plus';
-import UpArrow from '../svg/UpArrow'
+import Input from '../../components/Input';
+import Button from '../../components/Button';
+import Cross from '../../svg/Cross';
+import Plus from '../../svg/Plus';
+import UpArrow from '../../svg/UpArrow'
+import { toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 function UploadProduct() {
 
@@ -31,6 +33,33 @@ function UploadProduct() {
     ]);
 
     const [isSubmitting, setIsSubmitting] = useState(false);
+    const [catagoryData, setCatagoryData] = useState([])
+    const [selectedCatagory, setSelectedCatagory] = useState('');
+
+
+    useEffect(() => {
+        async function fetchData() {
+            try {
+                const response = await fetch('api/v1/catagory/get-catagory', {
+                    method: 'GET',
+                });
+    
+                if (response.ok) {
+                    console.log(response)
+                    const data = await response.json();
+                    setCatagoryData(data.data);
+                }
+            } catch (error) {
+                console.log(error);
+            }
+        }
+        fetchData();
+    }, []);
+
+    const notify = () => toast.error('🦄 Wow so easy!', {
+        position: "top-center",
+        autoClose: 3000,
+    });;
 
     const handleBoxInputChange = (e, id, name) => {
         const { value } = e.target;
@@ -144,7 +173,7 @@ function UploadProduct() {
                 formData.append(`variantPic_4`, variant.variantPics.variantPic_4);
             });
 
-            formData.append('catagory', data.catagory);
+            formData.append('catagory', selectedCatagory);
             formData.append('allIndiaDelivery', data.allIndiaDelivery === "true");
     
             // Append boxes (non-file fields)
@@ -160,8 +189,20 @@ function UploadProduct() {
             });
     
             const result = await response.json();
+            if(result.success) {
+                toast.success("Product Uploaded Successfully", {
+                    position: "top-center",
+                    autoClose: 3000,
+                    theme: "dark",
+                })
+            }
             console.log('Printing Result', result);
         } catch (error) {
+            toast.error("Failed to upload product", {
+                position: "top-center",
+                autoClose: 3000,
+                theme: "dark",
+            })
             console.error('Error uploading product:', error);
         } finally {
             setIsSubmitting(false);
@@ -250,12 +291,23 @@ function UploadProduct() {
                     <div>
                     <div className='flex flex-col gap-2'>
                         <label className='times'>Category</label>
-                        <Input
-                            type='text'
+
+                    <select
                             {...register(`catagory`, { required: 'Category is required' })}
-                            className='w-64 border-2 p-1'
-                            placeholder="Category"
-                        />
+                            className="w-64 border-2 p-1"
+                            value={selectedCatagory}
+                            onChange={(e) => setSelectedCatagory(e.target.value)}
+                        >
+                            <option value="" disabled>Select an option</option>
+                            {
+                                (catagoryData.length > 0) &&
+                                    catagoryData.map(item => (
+                                        <option key={item._id} value={item._id}>
+                                            {item.catagory}
+                                        </option>
+                                    ))
+                            }
+                        </select>
                         {errors[`catagory`] && <p>{errors[`catagory`].message}</p>}
                     </div>
 

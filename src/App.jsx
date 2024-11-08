@@ -1,7 +1,7 @@
 import React from 'react'
 import Header from './components/Header'
 import { Outlet } from 'react-router-dom'
-import UploadProduct from './pages/UploadProduct'
+import { ToastContainer } from 'react-toastify';
 
 function App() {
   return (
@@ -9,6 +9,7 @@ function App() {
     <div className='flex'>
       <Header />
       <Outlet />
+      <ToastContainer />
     </div>
       
     </>

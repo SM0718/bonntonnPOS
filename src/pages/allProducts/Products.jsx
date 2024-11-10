@@ -18,12 +18,12 @@ function Products() {
   ]
 
   return (
-    <div className='w-3/4 z-40 mx-auto py-8'>
+    <div className='w-5/6 z-40 mx-auto py-8'>
       
       <div className='w-full flex justify-between'>
         <h1 className='text-[32px] trajan'>PRODUCTS</h1>
         <NavLink to={'/product-upload'}>
-          <Button className={`bg-[#285EFE] p-3 flex gap-2 rounded-xl`}>                    
+          <Button className={`bg-indigo-600 hover:bg-[#A8A3F4] p-3 flex gap-2 rounded-xl`}>                    
             <UpArrow />
             <p className='text-white times'>Upload Product</p>
           </Button>

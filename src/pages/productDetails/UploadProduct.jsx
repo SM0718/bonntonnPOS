@@ -1,12 +1,13 @@
 import React, { useEffect, useState } from 'react';
 import { useForm } from "react-hook-form";
 import Input from '../../components/Input';
-import Button from '../../components/Button';
+// import Button from '../../components/Button';
 import Cross from '../../svg/Cross';
 import Plus from '../../svg/Plus';
 import UpArrow from '../../svg/UpArrow'
 import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import {Button, ButtonGroup} from "@nextui-org/button";
 
 function UploadProduct() {
 
@@ -324,7 +325,7 @@ function UploadProduct() {
                             <p className='trajan text-[28px]'>Varient Descriptions</p>
 
                             <div className='flex gap-4'>
-                            <Button type='submit' className={`bg-[#285EFE] p-3 rounded-xl text-white ${isSubmitting && 'cursor-wait'}`} disabled={isSubmitting}>
+                            <Button type='submit' className={`bg-indigo-600 p-3 rounded-xl text-white ${isSubmitting && 'cursor-wait'}`} disabled={isSubmitting}>
                                 {isSubmitting ? <span className='flex gap-2'>Uploading...</span> : <span className='flex gap-2'>
                                         <UpArrow />
                                         <p className='text-white times'>Upload Product</p>

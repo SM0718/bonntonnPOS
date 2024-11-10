@@ -1,185 +1,187 @@
 import React, { useState, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
-import Button from '../../components/Button';
-import Input from '../../components/Input';
+import { Input, Slider } from "@nextui-org/react"; 
+import {Dropdown, DropdownTrigger, DropdownMenu, DropdownItem, Button} from "@nextui-org/react";
 import { toast } from 'react-toastify';
-import ProductsList from '../../components/ProductsList'
+import ProductsList from '../../components/ProductsList';
 
 function AllProducts() {
   const [catagoryList, setCatagoryList] = useState([]);
   const [error, setError] = useState('');
   const { register, handleSubmit, reset, formState: { errors } } = useForm();
-  const [product, setProduct] = useState([])
-  const [deleteProduct, setDeleteProduct]  = useState("")
+  const [product, setProduct] = useState([]);
+  const [deleteProduct, setDeleteProduct] = useState("");
   const [selectedCatagory, setSelectedCatagory] = useState('');
+  const [priceRange, setPriceRange] = useState("100-9999");
+  const [foodType, setFoodType] = useState("");
 
-  const prices = [
-    { value: "100-1000" },
-    { value: "1001-2000" },
-    { value: "2001-3000" },
-    { value: "3001-4000" },
-    { value: "4001-9999" },
-  ];
+  // Function to fetch all products initially or with filters
+  const fetchProducts = async (filters = {}) => {
+    try {
+      const { catagory, priceRange, foodType, productName } = filters;
+
+      let query = `api/v1/products/filter-products?priceRange=${priceRange || '100-9999'}&productName=${productName || ''}`;
+      if (catagory) {
+        query += `&catagory=${catagory}`;
+      }
+
+      if (foodType) {
+        query += `&foodType=${foodType}`;
+      }
+
+      const response = await fetch(query, { method: 'GET' });
+      if (response.ok) {
+        const result = await response.json();
+        setProduct(result.data.products);
+      } else {
+        console.error('Error fetching products:', response.status, response.statusText);
+      }
+    } catch (error) {
+      toast.error("Error fetching products", { position: "top-center", autoClose: 3000, theme: "dark" });
+    }
+  };
 
   const handleFilter = async (data) => {
-    console.log(data);
-    let response
-    try {
-      if(data) {
-        response = await fetch(`api/v1/products/filter-products?catagory=${selectedCatagory}&priceRange=${data.priceRange}&foodType=${data.foodType}&productName=${data.productName}`, {
-          method: 'GET',
-        });
-      } else {
-        response = await fetch(`api/v1/products/filter-products`, {
-          method: 'GET',
-        });
-      }
-  
-      if(response.ok) {
-        const result = await response.json()
-        console.log(result.data.products)
-        setProduct(result.data.products)
-      } 
-    } catch (error) {
-      toast.error(error.message, {
-        position: "top-center",
-        autoClose: 3000,
-        theme: "dark",
-      })
-    }
+    fetchProducts({
+      catagory: selectedCatagory,
+      priceRange,
+      foodType,
+      productName: data.productName,
+    });
+  };
+
+  const handlePriceChange = (e) => {
+    const newPriceRange = `${e[0]}-${e[1]}`;
+    setPriceRange(newPriceRange);
+    // Trigger the fetch with updated price range
+    fetchProducts({ catagory: selectedCatagory, priceRange: newPriceRange, foodType, productName: "" });
   };
 
   const getCatagoryList = async () => {
-    setError('');
     try {
-      const response = await fetch('api/v1/products/get-catagories', {
-        method: 'GET',
-      });
-
+      const response = await fetch('api/v1/products/get-catagories', { method: 'GET' });
       if (response.ok) {
         const data = await response.json();
         setCatagoryList(data.data);
-        console.log(data);
       } else {
-        console.error(`Error: ${response.status} ${response.statusText}`);
+        console.error('Error fetching categories:', response.status, response.statusText);
       }
     } catch (error) {
-      console.log(error.message);
+      toast.error("Error fetching categories", { position: "top-center", autoClose: 3000, theme: "dark" });
     }
   };
 
-  const productDelete = async () => {
-
-    console.log(deleteProduct)
-   try {
-     if(deleteProduct) {
-       const request = await fetch(`api/v1/products/delete-product?productId=${deleteProduct}`, {
-        method: 'DELETE',
-      })
-
-       if(request.ok) {
-        const response = await request.json()
-        console.log(response)
-        toast.info("Product Deleted Successfully", {
-          position: "top-center",
-          autoClose: 2000,
-          theme: "dark",
-        })
-        handleFilter()
-       }
-     }
-   } catch (error) {
-    console.log(error)
-      toast.error(error.message, {
-        position: "top-center",
-        autoClose: 2000,
-        theme: "dark",
-      })
-   }
-  }
-
   useEffect(() => {
+    // Fetch all products initially
+    fetchProducts({});
     getCatagoryList();
   }, []);
 
   useEffect(() => {
-    handleFilter()
-  }, [])
-  
-  useEffect(() => {
+    if (deleteProduct) {
+      productDelete();
+    }
+  }, [deleteProduct]);
 
-    productDelete()
-  }, [deleteProduct])
+  const productDelete = async () => {
+    try {
+      const request = await fetch(`api/v1/products/delete-product?productId=${deleteProduct}`, { method: 'DELETE' });
+      if (request.ok) {
+        toast.info("Product Deleted Successfully", { position: "top-center", autoClose: 2000, theme: "dark" });
+        fetchProducts({ catagory: selectedCatagory, priceRange, foodType, productName: "" }); // Refresh the list
+      }
+    } catch (error) {
+      toast.error("Error deleting product", { position: "top-center", autoClose: 2000, theme: "dark" });
+    }
+  };
 
   const handleReset = () => {
     reset();
-    setSelectedCatagory("")
-    handleFilter()
+    setSelectedCatagory("");
+    setFoodType("");
+    setPriceRange("100-9999");
+    fetchProducts({}); // Fetch all products again with no filters
   };
 
   return (
     <div>
       <div className='flex flex-col gap-4 py-4'>
         <form onSubmit={handleSubmit(handleFilter)} className='flex gap-2'>
-          
-          <select
-              {...register(`catagory`)}
-              className="w-64 border-2 p-1"
-              value={selectedCatagory}
-              onChange={(e) => setSelectedCatagory(e.target.value)}
-          >
-              <option value="" disabled>Select an option</option>
-              {catagoryList.map(item => (
-              <option key={item._id} value={item._id}>
-                {item.catagory}
-              </option>
-            ))}
-          </select>
 
-          <select
-            {...register('priceRange')}
-            className="w-[150px] border-1 p-1 bg-transparent times" // "bg-transparent" removes background color
-            defaultValue=""
-          >
-            <option value="" disabled>Price Range</option>
-            {prices.map(item => (
-              <option key={item.value} value={item.value}>
-                {item.value}
-              </option>
-            ))}
-          </select>
+            <Dropdown>
+              <DropdownTrigger size="lg">
+                <Button variant="bordered" color="solid">
+                  {selectedCatagory ? `Selected: ${catagoryList.find(item => item._id === selectedCatagory)?.catagory}` : "Search For Category"}
+                </Button>
+              </DropdownTrigger>
+              <DropdownMenu
+                onAction={(key) => {
+                  setSelectedCatagory(key);
+                }}
+                aria-label="Category Selection"
+              >
+                {catagoryList.map((item) => (
+                  <DropdownItem key={item._id} value={item._id}>
+                    {item.catagory}
+                  </DropdownItem>
+                ))}
+              </DropdownMenu>
+            </Dropdown>
 
-          <select
-            {...register('foodType')}
-            className="w-[150px] border-1 p-1 bg-transparent times cursor-pointer"
-            defaultValue=""
-          >
-            <option value="" disabled>Food Type</option>
-            <option value={"VEG"}>VEG</option>
-            <option value={"NON-VEG"}>NON-VEG</option>
-            <option value={"EGG"}>EGG</option>
-          </select>
+          <Slider
+            size="sm"
+            label="Price Range"
+            step={50}
+            minValue={100}
+            maxValue={9999}
+            defaultValue={[100, 9999]}
+            formatOptions={{ style: "currency", currency: "INR" }}
+            className="w-[300px]"
+            onChange={handlePriceChange}
+          />
 
-          <Input 
-           {...register('productName')}
-           placeholder="Search Products..."
-           className={"w-[200px] border-[2px] px-1 rounded-md"}
-           />
+          <Dropdown>
+            <DropdownTrigger size="lg">
+              <Button variant="bordered" color="solid">
+                {foodType ? `Selected: ${foodType}` : "Dietry Selection"}
+              </Button>
+            </DropdownTrigger>
+            <DropdownMenu
+              onAction={(key) => {
+                setFoodType(key);
+              }}
+              aria-label="Dietry Selection"
+            >
+              <DropdownItem key="VEG" value="VEG">
+                VEG
+              </DropdownItem>
+              <DropdownItem key="NON-VEG" value="NON-VEG">
+                NON-VEG
+              </DropdownItem>
+              <DropdownItem key="EGG" value="EGG">
+                EGG
+              </DropdownItem>
+            </DropdownMenu>
+          </Dropdown>
+
+
+          <Input
+            size="sm"
+            type='text'
+            {...register('productName')}
+            label="Search Products"
+            className={"w-[200px]"}
+          />
 
           <div className='flex gap-4'>
-            <Button className={'w-[200px] times rounded-xl bg-slate-300 px-2 py-1'} type="submit">Search</Button>
-            <Button className={'w-[200px] times rounded-xl bg-slate-300 px-2 py-1'} type="button" onClick={handleReset}>Reset Filters</Button>
+            <Button color="primary" variant="ghost" size="lg" className={'w-[200px] times rounded-xl px-2 py-1'} type="submit">Search</Button>
+            <Button color="default" variant="ghost" size="lg" className={'w-[200px] times rounded-xl px-2 py-1'} type="button" onClick={handleReset}>Reset Filters</Button>
           </div>
-          
-        
-          
-          
-      </form>
+        </form>
       </div>
 
-
       <div>
-        <ProductsList data={product} setDeleteProduct={setDeleteProduct}/>
+        <ProductsList data={product} setDeleteProduct={setDeleteProduct} />
       </div>
     </div>
   );

@@ -20,11 +20,14 @@ function CatagoryUpload() {
 
             if (response.ok) {
                 const catagoryData = await response.json();
-                console.log(catagoryData.data)
                 setData(catagoryData.data)
             }
         } catch (error) {
-            console.log(error);
+          toast.error(error, {
+            position: "top-right",
+            autoClose: 2000,
+            theme: "dark",
+        })
         }
     }
     fetchData();
@@ -37,7 +40,6 @@ const deleteCatagory = async(catagoryId, catagory) => {
     })
 
     if(response.ok) {
-      console.log(response)
       if(response.status === 204) {
         toast.error(`${catagory} Linked With Product`, {
           position: "top-right",

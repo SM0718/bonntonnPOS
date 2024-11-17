@@ -12,7 +12,8 @@ import {
   ProductAnalytics,
   Orders,
   ProductDetails,
-  CatagoryUpload
+  CatagoryUpload,
+  EditProduct
 } from './pages/index.js'
 import AllProducts from './pages/allProducts/AllProducts.jsx'
 import {NextUIProvider} from '@nextui-org/react'
@@ -31,6 +32,7 @@ const router = createBrowserRouter(
         <Route path='/products/cupon-codes' element={<CuponCode />}/>
       </Route>
       <Route path='/orders' element={<Orders />}/>
+      <Route path='/edit-product/:productId' element={<EditProduct />}/>
     </Route>
   ))
 

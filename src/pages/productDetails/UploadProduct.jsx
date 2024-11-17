@@ -183,7 +183,8 @@ function UploadProduct() {
                 formData.append(`boxSize[${index}][boxType]`, box.boxType);
                 formData.append(`boxSize[${index}][boxPrice]`, box.boxPrice);
             });
-    
+            
+            console.log(formData)
             const response = await fetch('api/v1/products/add-product', {
                 method: 'POST',
                 body: formData,
@@ -277,6 +278,7 @@ function UploadProduct() {
             )
         );
     };
+
 
     return (
         <div className='flex flex-col items-center justify-center gap-2 py-8 mx-auto'>

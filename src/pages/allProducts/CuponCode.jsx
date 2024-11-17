@@ -26,10 +26,10 @@ function CuponCode() {
 
   const handleEdit = (cupon) => {
     setSelectedCupon(cupon);
-    // Set form values
     setValue('cuponCode', cupon.name);
     setValue('minOrderValue', cupon.minOrderValue);
     setValue('date', formatDateForInput(cupon.expiryDate));
+    setValue('discountPercentage', cupon.discountPercentage);
     onEditOpen();
   };
 
@@ -51,6 +51,7 @@ function CuponCode() {
           name: data.cuponCode.toUpperCase(),
           minOrderValue: data.minOrderValue,
           expiryDate: data.date,
+          discountPercentage: data.discountPercentage,
         }),
       });
 
@@ -80,7 +81,7 @@ function CuponCode() {
     }
 
     try {
-      const response = await fetch(`/api/v1/codes/create-code?name=${data.cuponCode.toUpperCase()}&minOrderValue=${data.minOrderValue}&expiryDate=${data.date}`, {
+      const response = await fetch(`/api/v1/codes/create-code?name=${data.cuponCode.toUpperCase()}&minOrderValue=${data.minOrderValue}&expiryDate=${data.date}&discountPercentage=${data.discountPercentage}`, {
         method: 'POST',
       });
 
@@ -151,125 +152,6 @@ function CuponCode() {
   };
 
   return (
-    // <div className="w-full py-4 relative">
-    //   <div className="w-full flex justify-end">
-    //     <Button onPress={onOpen} className="w-[200px] py-2 px-4 bg-indigo-600 text-white font-semibold rounded-lg hover:bg-indigo-700">
-    //       Create Cupon
-    //     </Button>
-    //   </div>
-
-    //   <Modal isOpen={isOpen} onOpenChange={onOpenChange}>
-    //     <ModalContent>
-    //       {(onClose) => (
-    //         <>
-    //           <ModalHeader className="flex flex-col gap-1">Add Cupon</ModalHeader>
-    //           <ModalBody>
-    //             <form onSubmit={handleSubmit(onSubmit)} className="w-full mx-auto space-y-4 bg-white rounded">
-    //               <div>
-    //                 <label className="block times text-sm font-medium text-gray-700 mb-2">Cupon Code</label>
-    //                 <Controller
-    //                   name="cuponCode"
-    //                   control={control}
-    //                   defaultValue=""
-    //                   render={({ field }) => (
-    //                     <Input
-    //                       type="text"
-    //                       className="block w-full px-3 py-2 border border-gray-300 rounded-xl shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
-    //                       {...field}
-    //                     />
-    //                   )}
-    //                 />
-    //               </div>
-
-    //               <div>
-    //                 <label className="block times text-sm font-medium text-gray-700 mb-2">Minimum Order Value</label>
-    //                 <Controller
-    //                   name="minOrderValue"
-    //                   control={control}
-    //                   defaultValue=""
-    //                   render={({ field }) => (
-    //                     <Input
-    //                       type="number"
-    //                       className="block w-full px-3 py-2 border border-gray-300 rounded-xl shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
-    //                       {...field}
-    //                     />
-    //                   )}
-    //                 />
-    //               </div>
-
-    //               <div>
-    //                 <label className="block times text-sm font-medium text-gray-700 mb-2">Select Date</label>
-    //                 <Controller
-    //                   name="date"
-    //                   control={control}
-    //                   defaultValue=""
-    //                   render={({ field }) => (
-    //                     <Input
-    //                       type="date"
-    //                       min={getTodayDate()}
-    //                       className="block w-full px-3 py-2 border border-gray-300 rounded-xl shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
-    //                       {...field}
-    //                     />
-    //                   )}
-    //                 />
-    //               </div>
-
-    //               <ModalFooter className="w-full flex gap-6">
-    //                 <Button type="submit" className="w-full py-2 px-4 bg-indigo-600 text-white font-semibold rounded-xl hover:bg-indigo-700">
-    //                   Submit
-    //                 </Button>
-    //                 <Button className="w-full py-2 px-4 bg-[#F00] text-white font-semibold rounded-xl hover:bg-[#db4a4a]" onPress={onClose}>
-    //                   Close
-    //                 </Button>
-    //               </ModalFooter>
-    //             </form>
-    //           </ModalBody>
-    //         </>
-    //       )}
-    //     </ModalContent>
-    //   </Modal>
-
-    //   <div className="my-4">
-    //     {loading ? (
-    //       <div className="flex justify-center">
-    //         <Spinner />
-    //       </div>
-    //     ) : (
-    //       <Table aria-label="Coupon Codes Table">
-    //         <TableHeader>
-    //           <TableColumn>CUPON CODE</TableColumn>
-    //           <TableColumn>MINIMUM ORDER VALUE</TableColumn>
-    //           <TableColumn>EXPIRY DATE</TableColumn>
-    //           <TableColumn>ACTIONS</TableColumn>
-    //         </TableHeader>
-    //         <TableBody>
-    //           {cuponCodes.map((item) => (
-    //             <TableRow key={item._id}>
-    //               <TableCell>{item.name}</TableCell>
-    //               <TableCell>{item.minOrderValue}</TableCell>
-    //               <TableCell><FormattedDate isoDateString={item.expiryDate} /></TableCell>
-    //               <TableCell>
-    //                 <Dropdown>
-    //                   <DropdownTrigger>
-    //                     <Button size="sm" variant="bordered">
-    //                       Open Menu
-    //                     </Button>
-    //                   </DropdownTrigger>
-    //                   <DropdownMenu aria-label="Actions">
-    //                     <DropdownItem key="edit">Edit code</DropdownItem>
-    //                     <DropdownItem onClick={() => deleteCode(item._id, item.name)} key="delete" className="text-danger" color="danger">
-    //                       Delete Code
-    //                     </DropdownItem>
-    //                   </DropdownMenu>
-    //                 </Dropdown>
-    //               </TableCell>
-    //             </TableRow>
-    //           ))}
-    //         </TableBody>
-    //       </Table>
-    //     )}
-    //   </div>
-    // </div>
 
     <div className="w-full py-4 relative">
       <div className="w-full flex justify-end">
@@ -291,6 +173,22 @@ function CuponCode() {
                     <label className="block times text-sm font-medium text-gray-700 mb-2">Cupon Code</label>
                     <Controller
                       name="cuponCode"
+                      control={createControl}
+                      defaultValue=""
+                      render={({ field }) => (
+                        <Input
+                          type="text"
+                          className="block w-full px-3 py-2 border border-gray-300 rounded-xl shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                          {...field}
+                        />
+                      )}
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block times text-sm font-medium text-gray-700 mb-2">Discount Percentage</label>
+                    <Controller
+                      name="discountPercentage"
                       control={createControl}
                       defaultValue=""
                       render={({ field }) => (
@@ -376,6 +274,22 @@ function CuponCode() {
                   </div>
 
                   <div>
+                    <label className="block times text-sm font-medium text-gray-700 mb-2">Discount Percentage</label>
+                    <Controller
+                      name="discountPercentage"
+                      control={createControl}
+                      defaultValue=""
+                      render={({ field }) => (
+                        <Input
+                          type="text"
+                          className="block w-full px-3 py-2 border border-gray-300 rounded-xl shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                          {...field}
+                        />
+                      )}
+                    />
+                  </div>
+
+                  <div>
                     <label className="block times text-sm font-medium text-gray-700 mb-2">Minimum Order Value</label>
                     <Controller
                       name="minOrderValue"
@@ -433,6 +347,7 @@ function CuponCode() {
             <TableHeader>
               <TableColumn>CUPON CODE</TableColumn>
               <TableColumn>MINIMUM ORDER VALUE</TableColumn>
+              <TableColumn>DISCOUNT PERCENTAGE</TableColumn>
               <TableColumn>EXPIRY DATE</TableColumn>
               <TableColumn>ACTIONS</TableColumn>
             </TableHeader>
@@ -441,6 +356,7 @@ function CuponCode() {
                 <TableRow key={item._id}>
                   <TableCell>{item.name}</TableCell>
                   <TableCell>{item.minOrderValue}</TableCell>
+                  <TableCell>{item.discountPercentage}</TableCell>
                   <TableCell><FormattedDate isoDateString={item.expiryDate} /></TableCell>
                   <TableCell>
                     <Dropdown>

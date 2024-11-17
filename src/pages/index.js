@@ -5,6 +5,7 @@ import ProductAnalytics from './ProductAnalytics'
 import Orders from "./Orders";
 import ProductDetails from "./productDetails/ProductDetails";
 import CatagoryUpload from "./productDetails/CatagoryUpload";
+import EditProduct from "./productDetails/EditProduct"
 
 export {
     UploadProduct,
@@ -13,5 +14,6 @@ export {
     Orders,
     CuponCode,
     ProductDetails,
-    CatagoryUpload
+    CatagoryUpload,
+    EditProduct
 }

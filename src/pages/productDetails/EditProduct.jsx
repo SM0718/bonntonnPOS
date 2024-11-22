@@ -682,7 +682,7 @@ function EditProduct() {
           <p className='times text-[24px]'>Packaging Details</p>
           <div className='w-full h-[200px] overflow-y-scroll flex flex-col gap-2 my-2'>
             {
-              currentData && currentData.boxSize?.map((item, index) => <div key={item.boxId} className='flex gap-2'>
+              currentData && currentData.boxSize?.map((item, index) => <div key={item.boxId} className='flex gap-2 items-center'>
                   
                   <Controller
                     name={`boxType_${index}`}
@@ -716,11 +716,11 @@ function EditProduct() {
                     )}
                   />
 
-                <Button onClick={addBox} color="success" variant="light">
+                <Button onClick={addBox} color="success" className='bg-slate-200 text-green-400'>
                   Add Box
                   </Button>
 
-                <Button onClick={(e) => deleteBox(e, item.boxId)} color="danger" variant="light">
+                <Button onClick={(e) => deleteBox(e, item.boxId)} color="danger" className='bg-slate-200 text-red-400'>
                   Delete
                 </Button>
 

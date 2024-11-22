@@ -8,7 +8,7 @@ export default defineConfig({
       '/api/v1': 'http://localhost:4000'
       // '/api/v1': 'bonntonnbackend.railway.internal'
     },
-    hmr: false
+    hmr: true
   },
   plugins: [react()],
 })

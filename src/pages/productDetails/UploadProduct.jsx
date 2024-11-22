@@ -1,551 +1,562 @@
-import React, { useEffect, useState } from 'react';
-import { useForm } from "react-hook-form";
-import Input from '../../components/Input';
-// import Button from '../../components/Button';
-import Cross from '../../svg/Cross';
-import Plus from '../../svg/Plus';
-import UpArrow from '../../svg/UpArrow'
+import React, { useState, useEffect, useRef } from 'react';
+import { useForm, useFieldArray, Controller } from 'react-hook-form';
+import { Button, Card, Input, Select, SelectItem, Textarea } from '@nextui-org/react';
 import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import {Button, ButtonGroup} from "@nextui-org/button";
 
+const Cross = () => (
+    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+      <path d="M18 6L6 18M6 6l12 12"/>
+    </svg>
+  );
 function UploadProduct() {
-
     const getRandomId = () => {
-        const date = new Date()
-        return date.getTime() + date.getMilliseconds() + date.getSeconds()
-    }
-    const { register, handleSubmit, reset, formState: { errors } } = useForm();
-    const [variants, setVariants] = useState([
-        {
-            id: getRandomId(),
-            variantName: "", variantDesc: "", variantPrice: 0, foodType: "",
-            variantPics: { variantPic_1: "", variantPic_2: "", variantPic_3: "", variantPic_4: "" },
-            allIndiaDelivery: false
-        }
-    ]);
+        return Date.now().toString() + Math.random().toString(36).substr(2, 9);
+    };
 
-    const [boxes, setBoxes] = useState([
-        {
-            boxId: getRandomId(),
-            boxType: "",
-            boxPrice: 0
+    const [tags, setTags] = React.useState(new Set());
+    const inputRef = useRef(null);
+
+    const defaultVariant = {
+        id: getRandomId(),
+        variantName: "",
+        variantDesc: "",
+        variantPrice: 0,
+        foodType: "",
+        variantPics: {
+            variantPic_1: null,
+            variantPic_2: null,
+            variantPic_3: null,
+            variantPic_4: null
+        },
+        allIndiaDelivery: false
+    };
+
+    const defaultBox = {
+        boxId: getRandomId(),
+        boxType: "",
+        boxPrice: 0
+    };
+
+    const defaultTags = {
+        name: ""
+    };
+
+    const { register, handleSubmit, control, reset, setValue, watch } = useForm({
+        defaultValues: {
+            catagory: '',
+            storage: '',
+            ingredients: '',
+            allergens: '',
+            size: '',
+            allIndiaDelivery: false,
+            variants: [defaultVariant],
+            boxes: [defaultBox]
         }
-    ]);
+    });
+
+    const { fields: variantFields, append: appendVariant, remove: removeVariant } = useFieldArray({
+        control,
+        name: "variants"
+    });
+
+    const { fields: boxFields, append: appendBox, remove: removeBox } = useFieldArray({
+        control,
+        name: "boxes"
+    });
 
     const [isSubmitting, setIsSubmitting] = useState(false);
-    const [catagoryData, setCatagoryData] = useState([])
-    const [selectedCatagory, setSelectedCatagory] = useState('');
-
+    const [catagoryData, setCatagoryData] = useState([]);
 
     useEffect(() => {
-        async function fetchData() {
-            try {
-                const response = await fetch('api/v1/catagory/get-catagory', {
-                    method: 'GET',
-                });
-    
-                if (response.ok) {
-                    console.log(response)
-                    const data = await response.json();
-                    setCatagoryData(data.data);
-                }
-            } catch (error) {
-                console.log(error);
-            }
-        }
-        fetchData();
+        fetchCategories();
     }, []);
 
-    const notify = () => toast.error('🦄 Wow so easy!', {
-        position: "top-center",
-        autoClose: 3000,
-    });;
+    const fetchCategories = async () => {
+        try {
+            const response = await fetch('api/v1/catagory/get-catagory', {
+                method: 'GET',
+            });
 
-    const handleBoxInputChange = (e, id, name) => {
-        const { value } = e.target;
-
-        setBoxes((prevBoxes) => 
-            prevBoxes.map((box) => 
-                box.boxId === id ? { ...box, [name]: value } : box
-            )
-        );
-        
-        console.log(boxes)
-    };
-
-    const handleBoxDelete = (e, id) => {
-        e.preventDefault();
-        if(boxes.length > 1) {
-            const data = [...boxes]
-            const updatedBoxes = data.filter(item => item.boxId !== id)
-            reset({ boxes: updatedBoxes });
-            setBoxes(updatedBoxes)
-        }
-        
-    };
-
-    const addBox = (e) => {
-        e.preventDefault();
-        setBoxes((prevBoxes) => [
-            ...prevBoxes,
-            {
-                boxId: getRandomId(),
-                boxType: "",
-                boxPrice: 0
+            if (response.ok) {
+                const data = await response.json();
+                setCatagoryData(data.data);
             }
-        ]);
+        } catch (error) {
+            console.error('Error fetching categories:', error);
+            toast.error('Failed to load categories');
+        }
     };
 
-    const handleInputChange = (e, id, name) => {
-        const { value } = e.target;
-        setVariants((prevVariants) => 
-            prevVariants.map((variant) => 
-                variant.id === id ? { ...variant, [name]: value } : variant
-            )
-        );
-
-        console.log(variants)
+    const handleImageChange = (variantIndex, imageField, file) => {
+        setValue(`variants.${variantIndex}.variantPics.${imageField}`, file);
     };
-    
-    
 
-    // const uploadProduct = async (data) => {
-    //     setIsSubmitting(true);
-    //     // console.log(variants)
-    //     try {
-    //         const formData = new FormData();
-    //         formData.append('catagory', data.catagory);
+    const handleImageDelete = (variantIndex, imageField) => {
+        setValue(`variants.${variantIndex}.variantPics.${imageField}`, null);
+    };
 
-    //         boxes.forEach((box, index) => {
-    //             formData.append(`boxSize[${index}][boxId]`, box.boxId)
-    //             formData.append(`boxSize[${index}][boxType]`, box.boxType)
-    //             formData.append(`boxSize[${index}][boxPrice]`, box.boxPrice)
-    //         })
+    const resetForm = () => {
+        reset({
+            category: '',
+            storage: '',
+            ingredients: '',
+            allergens: '',
+            size: '',
+            allIndiaDelivery: false,
+            variants: [defaultVariant],
+            boxes: [defaultBox],
+            tags: [defaultTags]
+        });
+    };
 
-    //         variants.forEach((variant, index) => {
-    //             formData.append(`variantPic_1`, variant.variantPics.variantPic_1);
-    //             formData.append(`variantPic_2`, variant.variantPics.variantPic_2);
-    //             formData.append(`variantPic_3`, variant.variantPics.variantPic_3);
-    //             formData.append(`variantPic_4`, variant.variantPics.variantPic_4);
-    //             console.log(formData);
-    //             // Append each variant's details directly as JSON objects
-    //             formData.append(`variant[${index}][id]`, variant.id);
-    //             formData.append(`variant[${index}][variantName]`, variant.variantName);
-    //             formData.append(`variant[${index}][variantDesc]`, variant.variantDesc);
-    //             formData.append(`variant[${index}][variantPrice]`, variant.variantPrice);
-    //             formData.append(`variant[${index}][foodType]`, variant.foodType);
-    //         });
+    const addTag = (tag) => {
+        setTags((prevTags) => new Set(prevTags).add(tag));
+      };
 
-    //         // console.log(formData);
-    //         const response = await fetch('api/v1/products/add-product', {
-    //             method: 'POST',
-    //             body: formData,
-    //         });
+    const handleClose = (tagsToRemove) => {
+        setTags(fruits.filter(fruit => fruit !== tagsToRemove));
+      };
 
-    //         const result = await response.json();
-    //         console.log('Printing Result', result);
-    //     } catch (error) {
-    //         console.error('Error uploading product:', error);
-    //     } finally {
-    //         setIsSubmitting(false);
-    //     }
-    // };
-
-    const uploadProduct = async (data) => {
+    const upload = async (formData) => {
         setIsSubmitting(true);
         try {
-            const formData = new FormData();
-    
-            // Append variant fields (non-file fields first)
-            variants.forEach((variant, index) => {
-                formData.append(`variant[${index}][id]`, variant.id);
-                formData.append(`variant[${index}][variantName]`, variant.variantName);
-                formData.append(`variant[${index}][variantDesc]`, variant.variantDesc);
-                formData.append(`variant[${index}][variantPrice]`, variant.variantPrice);
-                formData.append(`variant[${index}][foodType]`, variant.foodType);
-            });
-    
-            // Append variant images (file fields last)
-            variants.forEach((variant, index) => {
-                formData.append(`variantPic_1`, variant.variantPics.variantPic_1);
-                formData.append(`variantPic_2`, variant.variantPics.variantPic_2);
-                formData.append(`variantPic_3`, variant.variantPics.variantPic_3);
-                formData.append(`variantPic_4`, variant.variantPics.variantPic_4);
+            const productData = new FormData();
+            console.log(formData, "--Form Data--")
+            // Append basic product information
+            productData.append('catagory', formData.catagory);
+            productData.append('storage', formData.storage);
+            productData.append('ingredients', formData.ingredients);
+            productData.append('allergens', formData.allergens);
+            productData.append('size', formData.size);
+            productData.append('allIndiaDelivery', formData.allIndiaDelivery === 'true');
+
+            // Append variants
+            formData.variants.forEach((variant, index) => {
+                Object.keys(variant).forEach(key => {
+                    if (key !== 'variantPics') {
+                        productData.append(`variant[${index}][${key}]`, variant[key]);
+                    }
+                });
+
+                // Append variant images
+                Object.entries(variant.variantPics).forEach(([picKey, picValue]) => {
+                    if (picValue) {
+                        productData.append(picKey, picValue);
+                    }
+                });
             });
 
-            formData.append('catagory', selectedCatagory);
-            formData.append('allIndiaDelivery', data.allIndiaDelivery === "true");
-    
-            // Append boxes (non-file fields)
-            boxes.forEach((box, index) => {
-                formData.append(`boxSize[${index}][boxId]`, box.boxId);
-                formData.append(`boxSize[${index}][boxType]`, box.boxType);
-                formData.append(`boxSize[${index}][boxPrice]`, box.boxPrice);
+            // Append boxes
+            formData.boxes.forEach((box, index) => {
+                Object.entries(box).forEach(([key, value]) => {
+                    productData.append(`boxSize[${index}][${key}]`, value);
+                });
             });
-            
-            console.log(formData)
+            console.log(productData, "--Product Data--")
             const response = await fetch('api/v1/products/add-product', {
                 method: 'POST',
-                body: formData,
+                body: productData,
             });
-    
+
             const result = await response.json();
-            if(result.success) {
+            
+            if (result.success) {
                 toast.success("Product Uploaded Successfully", {
                     position: "top-center",
                     autoClose: 3000,
                     theme: "dark",
                 })
-                resetForm()
+                console.log(result)
+                resetForm();
+            } else {
+                throw new Error(result.message || 'Failed to upload product');
             }
-            console.log('Printing Result', result);
         } catch (error) {
             toast.error("Failed to upload product", {
                 position: "top-center",
                 autoClose: 3000,
                 theme: "dark",
             })
-            console.error('Error uploading product:', error);
+            
         } finally {
             setIsSubmitting(false);
         }
     };
-    
-
-    const resetForm = () => {
-        setVariants([{
-            id: getRandomId(),
-            variantName: "", variantDesc: "", variantPrice: 0, foodType: "",
-            variantPics: { variantPic_1: "", variantPic_2: "", variantPic_3: "", variantPic_4: "" },
-            allIndiaDelivery: false
-        }]);
-
-        setBoxes([{
-            boxId: getRandomId(),
-            boxType: "",
-            boxPrice: 0
-        }])
-        reset();
-    };
-
-    const addVariant = (e) => {
-        e.preventDefault();
-        setVariants((prevVariants) => [
-            ...prevVariants,
-            {
-                id: getRandomId(),
-                variantName: "", 
-                variantDesc: "", 
-                variantPrice: 0, 
-                foodType: "", 
-                variantPics: { variantPic_1: "", variantPic_2: "", variantPic_3: "", variantPic_4: "" },
-                allIndiaDelivery: false
-            }
-        ]);
-    };
-
-    const deleteVariant = (e, id) => {
-        e.preventDefault();
-        if(variants.length > 1) {
-            const data = [...variants]
-            const updatedVariants = data.filter(item => item.id !== id)
-            reset({ variants: updatedVariants });
-            setVariants(updatedVariants)
-        }
-        
-    };
-
-    const handleImagePreview = (e, id, name) => {
-        const file = e.target.files[0];
-        if (file) {
-            setVariants((prevVariants) => 
-                prevVariants.map(variant => 
-                    variant.id === id 
-                        ? { ...variant, variantPics: { ...variant.variantPics, [name]: file } } 
-                        : variant
-                )
-            );
-        }
-    };
-
-    const handleImgDelete = (id, name) => {
-        setVariants((prevVariants) => 
-            prevVariants.map(variant => 
-                variant.id === id 
-                    ? { ...variant, variantPics: { ...variant.variantPics, [name]: '' } } 
-                    : variant
-            )
-        );
-    };
-
 
     return (
-        <div className='flex flex-col items-center justify-center gap-2 py-8 mx-auto'>
+        <div className="flex flex-col items-center justify-center gap-2 py-8 mx-auto max-w-7xl px-4">
+            <div className="w-full flex justify-between items-center mb-8">
+                <h1 className="text-3xl font-bold trajan">Add New Product</h1>
+                <Button 
+                    onClick={resetForm} 
+                    color="danger" 
+                    variant="light"
+                    className="text-xl times"
+                >
+                    Discard Changes
+                </Button>
+            </div>
 
-        <div className='w-full flex justify-between'>
-            <p className='text-[32px] trajan'>Add New Product</p>
-            <Button onClick={resetForm} className={'text-[#F00] text-[22px] times'}>Discard Changes</Button>
-        </div>
-            
-            <form onSubmit={handleSubmit(uploadProduct)}>
+            <form onSubmit={handleSubmit(upload)} className="w-full space-y-8">
+                {/* Category Selection */}
+                <div className="w-64">
+                    <Controller
+                        name="catagory"
+                        control={control}
+                        rules={{ required: 'Category is required' }}
+                        render={({ field }) => (
+                            <Select 
+                                {...field}
+                                label="Select Category"
+                                size="sm"
+                            >
+                                {catagoryData.map(catagory => (
+                                    <SelectItem key={catagory._id} value={catagory._id}>
+                                        {catagory.catagory}
+                                    </SelectItem>
+                                ))}
+                            </Select>
+                        )}
+                    />
+                </div>
 
-                <div>
-
-                    <div>
-                    <div className='flex flex-col gap-2'>
-                        <label className='times'>Category</label>
-
-                    <select
-                            {...register(`catagory`, { required: 'Category is required' })}
-                            className="w-64 border-2 p-1"
-                            value={selectedCatagory}
-                            onChange={(e) => setSelectedCatagory(e.target.value)}
-                        >
-                            <option value="" disabled>Select an option</option>
-                            {
-                                (catagoryData.length > 0) &&
-                                    catagoryData.map(item => (
-                                        <option key={item._id} value={item._id}>
-                                            {item.catagory}
-                                        </option>
-                                    ))
-                            }
-                        </select>
-                        {errors[`catagory`] && <p>{errors[`catagory`].message}</p>}
-                    </div>
-
-                    <div>
-                        {
-
-                        }
-                    </div>
-                    </div>
-                        
-
-                        <div className='flex justify-between items-center mt-8'>
-                            <p className='trajan text-[28px]'>Varient Descriptions</p>
-
-                            <div className='flex gap-4'>
-                            <Button type='submit' className={`bg-indigo-600 p-3 rounded-xl text-white ${isSubmitting && 'cursor-wait'}`} disabled={isSubmitting}>
-                                {isSubmitting ? <span className='flex gap-2'>Uploading...</span> : <span className='flex gap-2'>
-                                        <UpArrow />
-                                        <p className='text-white times'>Upload Product</p>
-                                    </span>}
+                {/* Variants Section */}
+                <div className="space-y-6">
+                    <div className="flex justify-between items-center">
+                        <h2 className="text-2xl trajan">Variant Descriptions</h2>
+                        <div className="flex gap-4">
+                            <Button
+                                type="submit"
+                                color="primary"
+                                variant="bordered"
+                                className="times"
+                                isLoading={isSubmitting}
+                            >
+                                Upload Product
                             </Button>
-
-                            <Button onClick={addVariant} className='text-[#285EFE] times'>
-                                Add Varient
+                            <Button
+                                onClick={() => appendVariant(defaultVariant)}
+                                color="primary"
+                                variant="light"
+                                className="times"
+                            >
+                                Add Variant
                             </Button>
-                            </div>
                         </div>
-                        
-                    <div className='flex flex-col items-center gap-4 py-8'>
-                        {variants.map((variant, index) => (
-                            <div className='bg-[#E6E6E6] flex flex-col gap-2 p-8 rounded-xl relative' key={variant.id}>
+                    </div>
 
-                                <p onClick={(e) => deleteVariant(e, variant.id)}
-                                   className='absolute top-2 right-2 cursor-pointer'><Cross /></p>
+                    {/* Variant Cards */}
 
-                                <div className='flex flex-col justify-center gap-4'>
-                                    <div className='flex justify-center gap-4'>
-                                    {/* Image 1 */}
-                                    {!variant.variantPics.variantPic_1 ? (
-                                        <Input
-                                            type="file"
-                                            accept="image/*"
-                                            {...register(`variantPic_1_${index}`, { required: 'Image 1 is required' })}
-                                            onChange={(e) => handleImagePreview(e, variant.id, 'variantPic_1')}
-                                            className="w-52 h-40 object-cover"
-                                        />
-                                        ) : (
-                                        <div className="relative w-52 bg-red-400">
-                                            <img
-                                                src={URL.createObjectURL(variant.variantPics.variantPic_1)}
-                                                alt="Preview"
-                                                className="w-52 h-40 object-cover"
-                                            />
-                                            <p onClick={() => handleImgDelete(variant.id, 'variantPic_1')}
-                                                className='absolute -top-4 right-0 cursor-pointer'><Cross /></p>
+                    {variantFields.map((variant, index) => (
+                        <Card key={variant.id} className="p-6 relative bg-gray-50">
+                            <button
+                                onClick={() => removeVariant(index)}
+                                className="absolute top-2 right-2"
+                                type="button"
+                            >
+                                <Cross />
+                            </button>
+
+                            {/* Image Upload Section */}
+                            <div className="grid grid-cols-4 gap-4 mb-6">
+                                {[1, 2, 3, 4].map((num) => {
+                                    const picKey = `variantPic_${num}`;
+                                    const pic = watch(`variants.${index}.variantPics.${picKey}`);
+                                    return (
+                                        <div key={num} className="relative">
+                                            {!pic ? (
+                                                <Input
+                                                    type="file"
+                                                    accept="image/*"
+                                                    onChange={(e) => handleImageChange(index, picKey, e.target.files[0])}
+                                                    className="w-full"
+                                                />
+                                            ) : (
+                                                <div className="relative">
+                                                    <img
+                                                        src={URL.createObjectURL(pic)}
+                                                        alt={`Variant ${index + 1} Image ${num}`}
+                                                        className="w-full h-40 object-cover rounded"
+                                                    />
+                                                    <button
+                                                        onClick={() => handleImageDelete(index, picKey)}
+                                                        type="button"
+                                                        className="absolute -top-2 -right-2"
+                                                    >
+                                                        <Cross />
+                                                    </button>
+                                                </div>
+                                            )}
                                         </div>
+                                    );
+                                })}
+                            </div>
+
+                            {/* Variant Details */}
+                            <div className="grid grid-cols-3 gap-4">
+                                <Controller
+                                    name={`variants.${index}.variantName`}
+                                    control={control}
+                                    rules={{ required: 'Variant name is required' }}
+                                    render={({ field }) => (
+                                        <Input
+                                            {...field}
+                                            label="Variant Name"
+                                        />
                                     )}
-                                    {errors[`variantPic_1_${index}`] && <p>{errors[`variantPic_1_${index}`].message}</p>}
+                                />
 
-                                    {/* Image 2 */}
-                                    {!variant.variantPics.variantPic_2 ? (
+                                <Controller
+                                    name={`variants.${index}.variantPrice`}
+                                    control={control}
+                                    rules={{ required: 'Price is required', min: 0 }}
+                                    render={({ field }) => (
                                         <Input
-                                            type="file"
-                                            accept="image/*"
-                                            {...register(`variantPic_2_${index}`, { required: 'Image 2 is required' })}
-                                            onChange={(e) => handleImagePreview(e, variant.id, 'variantPic_2')}
-                                            className="w-52 h-40 object-cover"
+                                            {...field}
+                                            type="number"
+                                            label="Price"
                                         />
-                                        ) : (
-                                        <div className="relative">
-                                            <img
-                                                src={URL.createObjectURL(variant.variantPics.variantPic_2)}
-                                                alt="Preview"
-                                                className="w-52 h-40 object-cover"
-                                            />
-                                            <p onClick={() => handleImgDelete(variant.id, 'variantPic_2')}
-                                                className='absolute -top-4 right-0 cursor-pointer'><Cross /></p>
-                                        </div>
                                     )}
-                                    {errors[`variantPic_2_${index}`] && <p>{errors[`variantPic_2_${index}`].message}</p>}
+                                />
 
-                                    {/* Image 3 */}
-                                    {!variant.variantPics.variantPic_3 ? (
-                                        <Input
-                                            type="file"
-                                            accept="image/*"
-                                            {...register(`variantPic_3_${index}`, { required: 'Image 3 is required' })}
-                                            onChange={(e) => handleImagePreview(e, variant.id, 'variantPic_3')}
-                                            className="w-52 h-40 object-cover"
-                                        />
-                                        ) : (
-                                        <div className="relative">
-                                            <img
-                                                src={URL.createObjectURL(variant.variantPics.variantPic_3)}
-                                                alt="Preview"
-                                                className="w-52 h-40 object-cover"
-                                            />
-                                            <p onClick={() => handleImgDelete(variant.id, 'variantPic_3')}
-                                                className='absolute -top-4 right-0 cursor-pointer'><Cross /></p>
-                                        </div>
+                                <Controller
+                                    name={`variants.${index}.foodType`}
+                                    control={control}
+                                    rules={{ required: 'Food type is required' }}
+                                    render={({ field }) => (
+                                        <Select
+                                            {...field}
+                                            label="Dietary Selection"
+                                        >
+                                            <SelectItem key="VEG">Vegetarian</SelectItem>
+                                            <SelectItem key="NON-VEG">Non-Vegetarian</SelectItem>
+                                            <SelectItem key="EGG">Contains Egg</SelectItem>
+                                        </Select>
                                     )}
-                                    {errors[`variantPic_3_${index}`] && <p>{errors[`variantPic_3_${index}`].message}</p>}
+                                />
+                            </div>
 
-                                    {/* Image 4 */}
-                                    {!variant.variantPics.variantPic_4 ? (
-                                        <Input
-                                            type="file"
-                                            accept="image/*"
-                                            {...register(`variantPic_4_${index}`)}
-                                            onChange={(e) => handleImagePreview(e, variant.id, 'variantPic_4')}
-                                            className="w-52 h-40 object-cover"
-                                        />
-                                        ) : (
-                                        <div className="relative">
-                                            <img
-                                                src={URL.createObjectURL(variant.variantPics.variantPic_4)}
-                                                alt="Preview"
-                                                className="w-52 h-40 object-cover"
-                                            />
-                                            <p onClick={() => handleImgDelete(variant.id, 'variantPic_4')}
-                                                className='absolute -top-4 right-0 cursor-pointer'><Cross /></p>
-                                        </div>
-                                    )}
-                                    {errors[`variantPic_4_${index}`] && <p>{errors[`variantPic_4_${index}`].message}</p>}
-                                    </div>
-                                    {/* Variant Details */}
-                                    <div className='flex justify-between gap-4'>
-                                        <Input
-                                            type='text'
-                                            {...register(`variantName[${index}]`, { required: 'Variant Name is required' })}
-                                            className='border-2 p-1'
-                                            placeholder="Variant Name"
-                                            onChange={(e) => handleInputChange(e, variant.id, 'variantName')}
-                                            value={variant.variantName}
-                                        />
-                                        {errors[`variantName[${index}]`] && <p>{errors[`variantName[${index}]`].message}</p>}
-
-                                        <Input
-                                            type='textarea'
-                                            {...register(`variantDesc[${index}]`, { required: 'Variant Desc is required' })}
-                                            className='border-2 p-1'
-                                            placeholder="Variant Desc"
-                                            onChange={(e) => handleInputChange(e, variant.id, 'variantDesc')}
-                                        />
-                                        {errors[`variantDesc[${index}]`] && <p>{errors[`variantDesc[${index}]`].message}</p>}
-
-                                        <Input
-                                        type='number'
-                                        {...register(`variantPrice[${index}]`, { required: 'Variant Price is required' })}
-                                        className='border-2 p-1'
-                                        placeholder="Variant Price"
-                                        onChange={(e) => handleInputChange(e, variant.id, 'variantPrice')}
+                            <Controller
+                                name={`variants.${index}.variantDesc`}
+                                control={control}
+                                rules={{ required: 'Description is required' }}
+                                render={({ field }) => (
+                                    <Textarea
+                                        {...field}
+                                        label="Variant Description"
+                                        className="mt-4"
                                     />
-                                    {errors[`variantPrice[${index}]`] && <p>{errors[`variantPrice[${index}]`].message}</p>}
-
-                                    <select
-                                        {...register(`foodType[${index}]`, { required: 'Food Type is required' })}
-                                        className="border-1 p-1"
-                                        defaultValue=""
-                                        onChange={(e) => handleInputChange(e, variant.id, 'foodType')}
-                                    >
-                                        <option value="" disabled>Select an option</option>
-                                        <option value="VEG">VEG</option>
-                                        <option value="NON-VEG">NON-VEG</option>
-                                        <option value="EGG">EGG</option>
-                                    </select>
-                                    {errors[`foodType[${index}]`] && <p>{errors[`foodType[${index}]`].message}</p>}
-
-                                    
-
-                                    </div>
-                                </div>
-                                
-                            </div>
-                        ))}
+                                )}
+                            />
+                        </Card>
+                    ))}
+          
                     
-                        {/* Similar code for box fields */}
+                </div>
 
-                        <div className='w-full flex justify-between items-start gap-2'>
-
-                        <div className='flex flex-col gap-2'>
-                        {
-                            boxes.map((item, index) => 
-                                <div className='flex gap-4' key={item.boxId}>
-                                    <div className='flex gap-2'>
-                                     <Input
-                                            type='text'
-                                            {...register(`boxType[${index}]`)}
-                                            className='border-2 p-1'
-                                            placeholder="Box Type"
-                                            onChange={(e) => handleBoxInputChange(e, item.boxId, 'boxType')}
-                                            value={item.boxType}
-                                        />
-                                    {errors[`boxType[${index}]`] && <p>{errors[`boxType[${index}]`].message}</p>}
-
-                                    <Input
-                                            type='number'
-                                            {...register(`boxPrice[${index}]`)}
-                                            className='border-2 p-1'
-                                            placeholder="Box Price"
-                                            onChange={(e) => handleBoxInputChange(e, item.boxId, 'boxPrice')}
-                                            value={item.boxPrice}
-                                        />
-                                    {errors[`boxPrice[${index}]`] && <p>{errors[`boxPrice[${index}]`].message}</p>}
-                                    </div>
-
-                                    <div className='flex gap-2'>
-                                        <Button onClick={(e) => handleBoxDelete(e, item.boxId)} className={'bg-red-200 rounded-full px-2 transition duration-500 hover:bg-red-400'}><Cross /></Button>
-                                        <Button onClick={(e) => addBox(e)} className={'bg-green-200 rounded-full px-2 transition duration-500 hover:bg-green-400'}><Plus /></Button>
-                                    </div>
-                                </div>
-                            )
-                        }
+                {/* Additional Details Section */}
+                <div className='flex flex-col gap-2'>
+                <h2 className="text-2xl trajan">Additional Infromtaion</h2>
+                    <div className="grid grid-cols-2 gap-6">
+                        <div className="space-y-4">
+                            <Controller
+                                name="storage"
+                                control={control}
+                                rules={{ required: 'Storage Description is required' }}
+                                render={({ field }) => (
+                                    <Textarea
+                                        {...field}
+                                        label="Storage Information"
+                                        className="w-full"
+                                    />
+                                )}
+                            />
+                            <Controller
+                                name="allergens"
+                                control={control}
+                                rules={{ required: 'Allergens Description is required' }}
+                                render={({ field }) => (
+                                    <Textarea
+                                        {...field}
+                                        label="Allergens Information"
+                                        className="w-full"
+                                    />
+                                )}
+                            />
                         </div>
-                    <div className='flex gap-2'>
-                        <p className='text-[20px] times'>Pan-India Delivery</p>
-                        <select
-                            {...register(`allIndiaDelivery`, { required: 'Delivery Range is required' })}
-                            className="border-1 p-1"
-                            defaultValue=""
+                        <div className="space-y-4">
+                            <Controller
+                                name="ingredients"
+                                control={control}
+                                rules={{ required: 'Ingredients Description is required' }}
+                                render={({ field }) => (
+                                    <Textarea
+                                        {...field}
+                                        label="Ingredients Information"
+                                        className="w-full"
+                                    />
+                                )}
+                            />
+                            <Controller
+                                name="size"
+                                control={control}
+                                rules={{ required: 'Size Description is required' }}
+                                render={({ field }) => (
+                                    <Textarea
+                                        {...field}
+                                        label="Size Information"
+                                        className="w-full"
+                                    />
+                                )}
+                            />
+                        </div>
+                    </div>
+                </div>
+
+                {/* Box Sizes Section */}
+                <div className='w-full flex items-start gap-4'>
+                    <div className="w-full space-y-4">
+                        <div className='flex justify-between items-end'>
+                            <h2 className="text-2xl trajan">Box Sizes</h2>
+                            <Button 
+                                onClick={() => appendBox(defaultBox)} 
+                                color="primary" 
+                                variant="light" 
+                                className="mt-2"
+                                type="button"
+                            >
+                                Add Box
+                            </Button>
+                        </div>
+
+                        <div className='h-[150px] flex flex-col gap-2 overflow-y-scroll'>
+                            {boxFields.map((box, index) => (
+                                <div key={box.id} className="flex items-center gap-4">
+                                    <Controller
+                                        name={`boxes.${index}.boxType`}
+                                        control={control}
+                                        rules={{ required: 'Box type is required' }}
+                                        render={({ field }) => (
+                                            <Input
+                                                {...field}
+                                                size='sm'
+                                                label="Box Type"
+                                                className="w-1/2"
+                                            />
+                                        )}
+                                    />
+                                    <Controller
+                                        name={`boxes.${index}.boxPrice`}
+                                        control={control}
+                                        rules={{ required: 'Box price is required', min: 0 }}
+                                        render={({ field }) => (
+                                            <Input
+                                                {...field}
+                                                size='sm'
+                                                type="number"
+                                                label="Box Price"
+                                                className="w-1/3"
+                                            />
+                                        )}
+                                    />
+                                    <button 
+                                        onClick={() => removeBox(index)}
+                                        type="button"
+                                    >
+                                        <Cross />
+                                    </button>
+                                </div>
+                            ))}   
+                        </div>
+                        
+                    </div>
+
+                    <div className="w-full flex flex-col items-end space-y-4 my-3">
+                        <div className='w-full flex flex-col items-end space-y-4'>
+                            <p className="w-full text-2xl trajan">All India Availability</p>
+                            <Controller
+                                name="allIndiaDelivery"
+                                control={control}
+                                rules={{ required: 'All India Delivery is required' }}
+                                render={({ field }) => (
+                                    <Select 
+                                        {...field}
+                                        label="Select All India Delivery Availability"
+                                        size="sm"
+                                    >
+                                        <SelectItem key="true" value="true">All India Available</SelectItem>
+                                        <SelectItem key="false" value="false">Only In Kolkata</SelectItem>
+                                    </Select>
+                                )}
+                            />
+                        </div>
+
+
+                        
+                        {/* //Make the add tag div here */}
+                    <div className="w-full flex flex-col items-end space-y-4 my-4">
+                    <h2 className="w-full text-2xl trajan">Add Tags</h2>
+                    <div className="flex gap-4 w-full items-center">
+                    <Input
+                        ref={inputRef}
+                        label="Tag Name"
+                        size="sm"
+                        placeholder="Enter tag"
+                        onKeyDown={(e) => {
+                            if (e.key === "Enter" && e.target.value.trim()) {
+                                addTag(e.target.value.trim());
+                                e.target.value = ""; // Clear the input
+                                e.preventDefault();
+                            }
+                        }}
+                        className="flex-grow    "
+                    />
+
+                    <Button
+                        onClick={(e) => {
+                            e.preventDefault();
+                            if (inputRef.current && inputRef.current.value.trim()) {
+                                addTag(inputRef.current.value.trim());
+                                inputRef.current.value = ""; // Clear the input
+                            }
+                        }}
+                        color="primary"
+                        variant="bordered"
+                    >
+                        Add
+                    </Button>
+
+                    </div>
+                    <div className="w-full flex flex-wrap gap-2 mt-2">
+                        {[...tags].map((tag) => (
+                        <div
+                            key={tag}
+                            className="flex items-center px-3 py-1 bg-gray-200 rounded-full text-sm"
                         >
-                            <option value="" disabled>Select an option</option>
-                            <option value="false">False</option>
-                            <option value="true">True</option>
-                        </select>
-                        {errors[`allIndiaDelivery`] && <p>{errors[`allIndiaDelivery`].message}</p>}
+                            {tag}
+                            <button
+                            onClick={() => {
+                                setTags((prevTags) => {
+                                const newTags = new Set(prevTags);
+                                newTags.delete(tag);
+                                return newTags;
+                                });
+                            }}
+                            className="ml-2"
+                            >
+                            <Cross />
+                            </button>
+                        </div>
+                        ))}
                     </div>
                     </div>
 
-                    
-                   
-                       
+
+
+
+
                     </div>
-                    
                 </div>
             </form>
         </div>

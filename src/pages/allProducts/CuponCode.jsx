@@ -277,7 +277,7 @@ function CuponCode() {
                     <label className="block times text-sm font-medium text-gray-700 mb-2">Discount Percentage</label>
                     <Controller
                       name="discountPercentage"
-                      control={createControl}
+                      control={editControl}
                       defaultValue=""
                       render={({ field }) => (
                         <Input

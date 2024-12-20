@@ -74,7 +74,7 @@ function UploadProduct() {
 
     const fetchCategories = async () => {
         try {
-            const response = await fetch('api/v1/catagory/get-catagory', {
+            const response = await fetch('https://bonntonn.up.railway.app/api/v1/catagory/get-catagory', {
                 method: 'GET',
             });
 

@@ -81,7 +81,7 @@ function CuponCode() {
     }
 
     try {
-      const response = await fetch(`/api/v1/codes/create-code?name=${data.cuponCode.toUpperCase()}&minOrderValue=${data.minOrderValue}&expiryDate=${data.date}&discountPercentage=${data.discountPercentage}`, {
+      const response = await fetch(`https://bonntonn.up.railway.app/api/v1/codes/create-code?name=${data.cuponCode.toUpperCase()}&minOrderValue=${data.minOrderValue}&expiryDate=${data.date}&discountPercentage=${data.discountPercentage}`, {
         method: 'POST',
       });
 

@@ -77,7 +77,7 @@ function EditProduct() {
 
   const getProduct = async () => {
     try {
-      const response = await fetch(`/api/v1/products/product?productId=${productId}`, {
+      const response = await fetch(`https://bonntonn.up.railway.app/api/v1/products/product?productId=${productId}`, {
         method: "GET"
       });
   
@@ -125,7 +125,7 @@ function EditProduct() {
   useEffect(() => {
     async function fetchData() {
       try {
-        const response = await fetch('/api/v1/catagory/get-catagory', {
+        const response = await fetch('https://bonntonn.up.railway.app/api/v1/catagory/get-catagory', {
           method: 'GET',
         });
   
@@ -321,7 +321,7 @@ function EditProduct() {
   })
     console.log(formData)
     try {
-      const response = await fetch(`/api/v1/products/edit-product?productId=${productId}`, {
+      const response = await fetch(`https://bonntonn.up.railway.app/api/v1/products/edit-product?productId=${productId}`, {
         method: "POST",
         body: formData
       })

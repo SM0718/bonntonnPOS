@@ -42,7 +42,7 @@ function CuponCode() {
     }
 
     try {
-      const response = await fetch(`/api/v1/codes/update-code?cuponId=${selectedCupon._id}`, {
+      const response = await fetch(`https://bonntonn.up.railway.app/api/v1/codes/update-code?cuponId=${selectedCupon._id}`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
@@ -106,7 +106,7 @@ function CuponCode() {
   const getCuponCodes = async () => {
     setLoading(true); // Set loading to true when fetching starts
     try {
-      const response = await fetch("/api/v1/codes/get-code", {
+      const response = await fetch("https://bonntonn.up.railway.app/api/v1/codes/get-code", {
         method: "GET"
       });
 
@@ -128,7 +128,7 @@ function CuponCode() {
 
   const deleteCode = async (cuponId, name) => {
     try {
-      const response = await fetch(`/api/v1/codes/delete-code?cuponId=${cuponId}`, {
+      const response = await fetch(`https://bonntonn.up.railway.app/api/v1/codes/delete-code?cuponId=${cuponId}`, {
         method: "DELETE"
       });
 

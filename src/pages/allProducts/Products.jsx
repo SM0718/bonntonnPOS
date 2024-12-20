@@ -23,7 +23,7 @@ function Products() {
 
   const handleDownload = async () => {
     try {
-        const response = await axios.get("api/v1/products/download-products", {
+        const response = await axios.get("https://bonntonn.up.railway.app/api/v1/products/download-products", {
             responseType: "blob",
         });
         const blob = new Blob([response.data], {

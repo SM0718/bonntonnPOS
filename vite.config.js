@@ -1,17 +1,21 @@
 import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
 
-// https://vitejs.dev/config/
 export default defineConfig({
   server: {
     proxy: {
-      '/api/v1': 'http://localhost:4000'
-      // '/api/v1': 'bonntonnbackend.railway.internal'
+      // Proxy all API requests to the backend
+      '/api/v1': {
+        target: 'https://bonntonn.up.railway.app', // Use the full URL with protocol
+        changeOrigin: true, // Ensures the host header matches the target
+        secure: true, // If the backend uses HTTPS
+      },
     },
-    hmr: true
+    hmr: true,
   },
   plugins: [react()],
 })
+
 
 // import { defineConfig } from 'vite'
 // import react from '@vitejs/plugin-react'

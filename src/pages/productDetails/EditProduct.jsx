@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useCallback } from 'react';
+import React, { useEffect, useState, useRef  } from 'react';
 import { Spinner } from '@nextui-org/spinner';
 import { NavLink, useParams } from 'react-router-dom';
 import {
@@ -12,7 +12,8 @@ import {
   SelectItem,
   Card,
   Image,
-  Textarea
+  Textarea,
+  Switch
 } from '@nextui-org/react';
 import { toast } from 'react-toastify';
 import { useForm, Controller } from 'react-hook-form';
@@ -20,6 +21,8 @@ import Cross from '../../svg/Cross';
 import { debounce } from 'lodash';
 
 function EditProduct() {
+
+  const inputRef = useRef(null);
   const getRandomId = () => {
     const date = new Date();
     return date.getTime() + date.getMilliseconds() + date.getSeconds();
@@ -37,6 +40,7 @@ function EditProduct() {
     ingredients: "", 
     size: ""
   });
+  const [tags, setTags] = useState(new Set())
   const [loading, setLoading] = useState(false)
   const { productId } = useParams();
   const { control, handleSubmit, reset, setValue, getValues, formState: { errors } } = useForm({
@@ -66,7 +70,8 @@ function EditProduct() {
       storage: "", 
       allergens: "", 
       ingredients: "", 
-      size: ""
+      size: "",
+      tags: [""],
     }
   });
 
@@ -78,6 +83,8 @@ function EditProduct() {
   
       if (response.ok) {
         const data = await response.json();
+        data.data.tags.forEach((tag, index) => setValue(`tags[${index}]`, tag));
+        setTags(new Set(data.data.tags))
         const selectedItem = catagoryData.find(item => item._id === data.data.catagory);
         setSelectedCategory(selectedItem?.catagory);
         // Set all form values
@@ -234,7 +241,7 @@ function EditProduct() {
     
     e.preventDefault()
     const index = currentData.boxSize.findIndex(item => item.boxId === id);
-    console.log(currentData.boxSize)
+    // console.log(currentData.boxSize)
     if (index !== -1 && currentData.boxSize.length > 1) {
       const updatedBox = currentData.boxSize.filter(item => item.boxId !== id);
       setValue('boxSize', updatedBox, { shouldValidate: true });
@@ -256,7 +263,7 @@ function EditProduct() {
 
   const uploadChanges = async(data) => {
     setLoading(true)
-    console.log(data, "--Upload Changes--");
+    // console.log(data, "--Upload Changes--");
 
     const incompleteVariant = data.variants.some(variant => 
       Object.values(variant).some(value => value === "" || value === 0)
@@ -307,7 +314,12 @@ function EditProduct() {
       formData.append(`boxSize[${index}][boxType]`, box.boxType);
       formData.append(`boxSize[${index}][boxPrice]`, box.boxPrice);
   });
-    // console.log(formData)
+
+  
+  Array.from(tags).forEach((tag, index) => {
+      formData.append(`tags[${index}]`, tag);
+  })
+    console.log(formData)
     try {
       const response = await fetch(`/api/v1/products/edit-product?productId=${productId}`, {
         method: "POST",
@@ -318,7 +330,7 @@ function EditProduct() {
         toast.success("Product Updated Successfully", {
           autoClose: 1000
         })
-        console.log(await response.json())
+        // console.log(await response.json())
       }
     } catch (error) {
       console.log(error)
@@ -348,8 +360,17 @@ function EditProduct() {
   }
   
   useEffect(() => {
-    console.log(currentData)
-  }, [currentData])
+    // Update tags in the form and currentData when tags change
+    const tagsArray = Array.from(tags); // Convert Set to Array
+    tagsArray.forEach((tag, index) => setValue(`tags[${index}]`, tag));
+    setCurrentData((prevData) => ({ ...prevData, tags: tagsArray }));
+    // console.log(currentData?.tags)
+  }, [tags]);
+
+  // useEffect(() => {
+  //   console.log(currentData)
+  // }, [currentData]);
+  
 
   return (
     <div className='w-full flex flex-col items-center py-8'>
@@ -597,9 +618,11 @@ function EditProduct() {
              
             </DropdownMenu>
           </Dropdown>
+
+            <Switch onClick={(e) => console.log(e.target.value)} defaultSelected></Switch>
               </div>
 
-              <p onClick={() => deleteVariant(item.id)}  className='absolute top-2 right-2 cursor-pointer'><Cross /></p>
+              <p onChange={() => deleteVariant(item.id)}  className='absolute top-2 right-2 cursor-pointer'><Cross /></p>
             </Card>
           ))}
         </div>
@@ -679,7 +702,13 @@ function EditProduct() {
 
         <div className='w-full flex items-start gap-4'>
           <div className='w-3/4 flex flex-col gap-2 my-2'>
-          <p className='times text-[24px]'>Packaging Details</p>
+          <div className='w-full flex justify-between'>
+            <p className='times text-[24px]'>Packaging Details</p>
+            
+            <Button onClick={addBox} color="primary" variant="ghost">
+                  Add Box
+            </Button>
+          </div>
           <div className='w-full h-[200px] overflow-y-scroll flex flex-col gap-2 my-2'>
             {
               currentData && currentData.boxSize?.map((item, index) => <div key={item.boxId} className='flex gap-2 items-center'>
@@ -716,13 +745,15 @@ function EditProduct() {
                     )}
                   />
 
-                <Button onClick={addBox} color="success" className='bg-slate-200 text-green-400'>
-                  Add Box
-                  </Button>
-
-                <Button onClick={(e) => deleteBox(e, item.boxId)} color="danger" className='bg-slate-200 text-red-400'>
-                  Delete
-                </Button>
+                    <Button
+                      onClick={(e) => deleteBox(e, item.boxId)}
+                      
+                      variant="ghost"
+                      className="text-black hover:text-red-600"
+                    >
+                      Delete
+                    </Button>
+                      
 
                 </div>
                 )
@@ -731,7 +762,8 @@ function EditProduct() {
             
           </div>
 
-          <div className='w-1/2 my-4 flex flex-col gap-2'>
+          <div className='w-1/2'>
+          <div className='w-full my-4 flex flex-col gap-2'>
           <p className='times text-[24px]'>All India Delivery</p>
           <Dropdown size={"lg"} className="px-8">
               <DropdownTrigger>
@@ -756,6 +788,91 @@ function EditProduct() {
               
               </DropdownMenu>
             </Dropdown>        
+          </div>
+
+          <div className="w-full h-[200px] border border-gray-300 overflow-y-scroll rounded-lg p-4 shadow-md my-4">
+      <p className="text-lg font-medium text-gray-800 mb-2 trajan">Tags</p>
+
+      <Controller
+        name="tags[]"
+        control={control}
+        render={({ field }) => (
+          <Input
+            {...field}
+            size="md"
+            type="text"
+            label="Add a Tag"
+            placeholder="Type a tag and press Enter"
+            ref={inputRef}
+            className="tag w-full border border-gray-200 rounded-md p-2 focus:outline-none focus:ring-2 focus:ring-gray-400"
+            onKeyDown={(e) => {
+              if (e.key === "Enter" && inputRef.current.value.trim()) {
+                setTags((prevTags) => {
+                  const newTags = new Set(prevTags);
+                  newTags.add(inputRef.current.value.trim());
+                  return newTags;
+                });
+                inputRef.current.value = ""; // Clear the input field
+                e.preventDefault();
+              }
+            }}
+          />
+        )}
+      />
+
+      {/* Tags Display */}
+      <div className="w-full flex flex-wrap gap-2 mt-4 overflow-y-scroll max-h-[120px] bg-gray-50 rounded-md p-2 border border-gray-200">
+        {currentData?.tags?.filter((item) => item.trim() !== "").length > 0 ? (
+          currentData.tags.map((tag) => (
+            <div
+              key={tag}
+              className="flex items-center px-3 py-1 bg-gray-100 text-gray-800 rounded-full text-sm font-medium shadow-sm"
+            >
+              {tag}
+              <button
+                onClick={(e) => {
+                  e.preventDefault();
+                  setTags((prevTags) => {
+                    const newTags = new Set(prevTags);
+                    newTags.delete(tag);
+                    return newTags;
+                  });
+                }}
+                className="ml-2 text-gray-600 hover:text-gray-800 rounded-full focus:outline-none"
+              >
+                ✕
+              </button>
+            </div>
+          ))
+        ) : (
+          <p className="text-sm text-gray-500 italic">No tags added yet.</p>
+        )}
+      </div>
+
+      {/* Add Button */}
+      <Button
+        className="mt-4 bg-gray-800 hover:bg-gray-700 text-white rounded-lg px-4 py-2 focus:ring-2 focus:ring-gray-400"
+        onClick={(e) => {
+          const tagValue = inputRef.current.value.trim();
+
+          if (tagValue) {
+            setTags((prevTags) => {
+              const newTags = new Set(prevTags);
+              newTags.add(tagValue);
+              return newTags;
+            });
+            inputRef.current.value = ""; // Clear the input field
+          }
+
+          e.preventDefault();
+        }}
+      >
+        Add Tag
+      </Button>
+    </div>
+
+
+
           </div>
 
         </div>

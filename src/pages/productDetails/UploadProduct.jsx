@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useForm, useFieldArray, Controller } from 'react-hook-form';
 import { Button, Card, Input, Select, SelectItem, Textarea } from '@nextui-org/react';
 import { toast } from 'react-toastify';
@@ -15,7 +15,7 @@ function UploadProduct() {
     };
 
     const [tags, setTags] = React.useState(new Set());
-    const inputRef = useRef(null);
+    const [tag, setTag] = useState("");
 
     const defaultVariant = {
         id: getRandomId(),
@@ -108,14 +108,12 @@ function UploadProduct() {
             boxes: [defaultBox],
             tags: [defaultTags]
         });
+        setTags("")
+        setTag("")
     };
 
     const addTag = (tag) => {
         setTags((prevTags) => new Set(prevTags).add(tag));
-      };
-
-    const handleClose = (tagsToRemove) => {
-        setTags(fruits.filter(fruit => fruit !== tagsToRemove));
       };
 
     const upload = async (formData) => {
@@ -130,6 +128,7 @@ function UploadProduct() {
             productData.append('allergens', formData.allergens);
             productData.append('size', formData.size);
             productData.append('allIndiaDelivery', formData.allIndiaDelivery === 'true');
+            Array.from(tags).forEach((tag) => productData.append("tags[]", tag));
 
             // Append variants
             formData.variants.forEach((variant, index) => {
@@ -169,6 +168,8 @@ function UploadProduct() {
                 })
                 console.log(result)
                 resetForm();
+                setTags("")
+                setTag("")
             } else {
                 throw new Error(result.message || 'Failed to upload product');
             }
@@ -363,7 +364,6 @@ function UploadProduct() {
                             <Controller
                                 name="storage"
                                 control={control}
-                                rules={{ required: 'Storage Description is required' }}
                                 render={({ field }) => (
                                     <Textarea
                                         {...field}
@@ -375,7 +375,6 @@ function UploadProduct() {
                             <Controller
                                 name="allergens"
                                 control={control}
-                                rules={{ required: 'Allergens Description is required' }}
                                 render={({ field }) => (
                                     <Textarea
                                         {...field}
@@ -389,7 +388,6 @@ function UploadProduct() {
                             <Controller
                                 name="ingredients"
                                 control={control}
-                                rules={{ required: 'Ingredients Description is required' }}
                                 render={({ field }) => (
                                     <Textarea
                                         {...field}
@@ -401,7 +399,6 @@ function UploadProduct() {
                             <Controller
                                 name="size"
                                 control={control}
-                                rules={{ required: 'Size Description is required' }}
                                 render={({ field }) => (
                                     <Textarea
                                         {...field}
@@ -498,27 +495,29 @@ function UploadProduct() {
                     <div className="w-full flex flex-col items-end space-y-4 my-4">
                     <h2 className="w-full text-2xl trajan">Add Tags</h2>
                     <div className="flex gap-4 w-full items-center">
+                    
                     <Input
-                        ref={inputRef}
+                        value={tag}
+                        onChange={(e) => setTag(e.target.value)}
                         label="Tag Name"
                         size="sm"
                         placeholder="Enter tag"
                         onKeyDown={(e) => {
-                            if (e.key === "Enter" && e.target.value.trim()) {
-                                addTag(e.target.value.trim());
-                                e.target.value = ""; // Clear the input
+                            if (e.key === "Enter" && tag.trim()) {
+                                addTag(tag.trim());
+                                setTag("");
                                 e.preventDefault();
                             }
                         }}
-                        className="flex-grow    "
+                        className="flex-grow"
                     />
 
                     <Button
                         onClick={(e) => {
                             e.preventDefault();
-                            if (inputRef.current && inputRef.current.value.trim()) {
-                                addTag(inputRef.current.value.trim());
-                                inputRef.current.value = ""; // Clear the input
+                            if (tag.trim()) {
+                                addTag(tag.trim());
+                                setTag("");
                             }
                         }}
                         color="primary"
@@ -526,7 +525,6 @@ function UploadProduct() {
                     >
                         Add
                     </Button>
-
                     </div>
                     <div className="w-full flex flex-wrap gap-2 mt-2">
                         {[...tags].map((tag) => (

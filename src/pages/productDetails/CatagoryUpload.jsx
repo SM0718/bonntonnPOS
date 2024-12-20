@@ -178,6 +178,14 @@ import { toast } from 'react-toastify';
 import { useForm } from "react-hook-form";
 
 const CategoryUpload = () => {
+
+  const Cross = () => (
+    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+      <path d="M18 6L6 18M6 6l12 12"/>
+    </svg>
+  );
+
+  const [pic, setPic] = useState(null)
   const [data, setData] = useState([]);
   const [reloadData, setReloadData] = useState(false);
   const [showModal, setShowModal] = useState(false);
@@ -240,38 +248,47 @@ const CategoryUpload = () => {
   };
 
   const addCategory = async (data) => {
+    console.log(data, pic);
     try {
+      const catagoryData = new FormData();
+      catagoryData.append('catagoryDesc', data.description);
+      catagoryData.append('catagoryPic', pic);
+      console.log(catagoryData);
       const response = await fetch(`/api/v1/catagory/add-catagory?catagory=${data.catagory}`, {
-        method: 'POST'
+        method: 'POST',
+        body: catagoryData,
       });
-
+  
       if (response.ok) {
         if (response.status === 204) {
           toast.info(`${data.catagory} Already Exist`, {
-            position: "top-right",
+            position: 'top-right',
             autoClose: 2000,
-            theme: "dark"
+            theme: 'dark',
           });
+          setPic(null); // Reset the image field
           reset();
         } else {
           toast.success(`${data.catagory} Added Successfully`, {
-            position: "top-right",
+            position: 'top-right',
             autoClose: 2000,
-            theme: "dark"
+            theme: 'dark',
           });
           setReloadData(!reloadData);
+          setPic(null); // Reset the image field
           reset();
           setShowModal(false);
         }
       }
     } catch (error) {
       toast.error(error, {
-        position: "top-right",
+        position: 'top-right',
         autoClose: 2000,
-        theme: "dark"
+        theme: 'dark',
       });
     }
   };
+  
 
   return (
     <div className="w-full py-8 relative">
@@ -297,6 +314,42 @@ const CategoryUpload = () => {
                 {errors.catagory && (
                   <p className="text-red-500 text-sm">{errors.catagory.message}</p>
                 )}
+
+                <Input
+                  type="textarea"
+                  {...register('description', { required: 'Category Description is required' })}
+                  className="w-full border-2 p-2 rounded-xl"
+                  placeholder="Description"
+                />
+                {errors.catagory && (
+                  <p className="text-red-500 text-sm">{errors.catagory.message}</p>
+                )}
+
+                  {!pic ? (
+                      <Input
+                          type="file"
+                          accept="image/*"
+                          onChange={(e) => setPic(e.target.files[0])}
+                          className="w-full"
+                      />
+                  ) : (
+                      <div className="relative">
+                          <img
+                              src={URL.createObjectURL(pic)}
+                              alt={`Catagory Pic`}
+                              className="w-full h-40 object-cover rounded"
+                          />
+                          <button
+                              onClick={() => setPic(null)}
+                              type="button"
+                              className="absolute -top-2 -right-2"
+                          >
+                              <Cross />
+                          </button>
+                      </div>
+                  )}
+
+                
                 <Button
                   type="submit"
                   className="w-full bg-blue-600 py-2 rounded-xl text-white"

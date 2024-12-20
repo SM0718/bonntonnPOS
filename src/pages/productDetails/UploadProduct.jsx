@@ -74,7 +74,7 @@ function UploadProduct() {
 
     const fetchCategories = async () => {
         try {
-            const response = await fetch('api/v1/catagory/get-catagory', {
+            const response = await fetch('https://bonntonn.up.railway.app/api/v1/catagory/get-catagory', {
                 method: 'GET',
             });
 
@@ -153,7 +153,7 @@ function UploadProduct() {
                 });
             });
             console.log(productData, "--Product Data--")
-            const response = await fetch('api/v1/products/add-product', {
+            const response = await fetch('https://bonntonn.up.railway.app/api/v1/products/add-product', {
                 method: 'POST',
                 body: productData,
             });

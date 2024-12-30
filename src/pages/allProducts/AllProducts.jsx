@@ -20,7 +20,7 @@ function AllProducts() {
     try {
       const { catagory, priceRange, foodType, productName } = filters;
 
-      let query = `http://bonnbackend.up.railway.app/api/v1/products/filter-products?priceRange=${priceRange || '100-9999'}&productName=${productName || ''}`;
+      let query = `https://bonnbackend.up.railway.app/api/v1/products/filter-products?priceRange=${priceRange || '100-9999'}&productName=${productName || ''}`;
       if (catagory) {
         query += `&catagory=${catagory}`;
       }
@@ -59,7 +59,7 @@ function AllProducts() {
 
   const getCatagoryList = async () => {
     try {
-      const response = await fetch('http://bonnbackend.up.railway.app/api/v1/products/get-catagories', { method: 'GET' });
+      const response = await fetch('https://bonnbackend.up.railway.app/api/v1/products/get-catagories', { method: 'GET' });
       if (response.ok) {
         const data = await response.json();
         setCatagoryList(data.data);
@@ -85,7 +85,7 @@ function AllProducts() {
 
   const productDelete = async () => {
     try {
-      const request = await fetch(`http://bonnbackend.up.railway.app/api/v1/products/delete-product?productId=${deleteProduct}`, { method: 'DELETE' });
+      const request = await fetch(`https://bonnbackend.up.railway.app/api/v1/products/delete-product?productId=${deleteProduct}`, { method: 'DELETE' });
       if (request.ok) {
         toast.info("Product Deleted Successfully", { position: "top-center", autoClose: 2000, theme: "dark" });
         fetchProducts({ catagory: selectedCatagory, priceRange, foodType, productName: "" }); // Refresh the list

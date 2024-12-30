@@ -18,7 +18,6 @@ import {
 import { toast } from 'react-toastify';
 import { useForm, Controller } from 'react-hook-form';
 import Cross from '../../svg/Cross';
-import { debounce } from 'lodash';
 
 function EditProduct() {
 
@@ -77,7 +76,7 @@ function EditProduct() {
 
   const getProduct = async () => {
     try {
-      const response = await fetch(`http://bonnbackend.up.railway.app/api/v1/products/product?productId=${productId}`, {
+      const response = await fetch(`https://bonnbackend.up.railway.app/api/v1/products/product?productId=${productId}`, {
         method: "GET"
       });
   
@@ -125,7 +124,7 @@ function EditProduct() {
   useEffect(() => {
     async function fetchData() {
       try {
-        const response = await fetch('http://bonnbackend.up.railway.app/api/v1/catagory/get-catagory', {
+        const response = await fetch('https://bonnbackend.up.railway.app/api/v1/catagory/get-catagory', {
           method: 'GET',
         });
   
@@ -321,7 +320,7 @@ function EditProduct() {
   })
     console.log(formData)
     try {
-      const response = await fetch(`http://bonnbackend.up.railway.app/api/v1/products/edit-product?productId=${productId}`, {
+      const response = await fetch(`https://bonnbackend.up.railway.app/api/v1/products/edit-product?productId=${productId}`, {
         method: "POST",
         body: formData
       })

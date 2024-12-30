@@ -23,7 +23,7 @@ function Products() {
 
   const handleDownload = async () => {
     try {
-        const response = await fetch("http://bonnbackend.up.railway.app/api/v1/products/download-products", {
+        const response = await fetch("https://bonnbackend.up.railway.app/api/v1/products/download-products", {
             method: "GET",
         });
 

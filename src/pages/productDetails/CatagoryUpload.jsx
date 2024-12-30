@@ -194,7 +194,7 @@ const CategoryUpload = () => {
   useEffect(() => {
     async function fetchData() {
       try {
-        const response = await fetch('https://bonntonn.up.railway.app/api/v1/catagory/get-catagory', {
+        const response = await fetch('http://bonnbackend.up.railway.app/api/v1/catagory/get-catagory', {
           method: 'GET',
         });
 
@@ -215,7 +215,7 @@ const CategoryUpload = () => {
 
   const deleteCategory = async (categoryId, category) => {
     try {
-      const response = await fetch(`https://bonntonn.up.railway.app/api/v1/catagory/delete-catagory?catagoryId=${categoryId}`, {
+      const response = await fetch(`http://bonnbackend.up.railway.app/api/v1/catagory/delete-catagory?catagoryId=${categoryId}`, {
         method: 'DELETE',
       });
 
@@ -254,7 +254,7 @@ const CategoryUpload = () => {
       catagoryData.append('catagoryDesc', data.description);
       catagoryData.append('catagoryPic', pic);
       console.log(catagoryData);
-      const response = await fetch(`https://bonntonn.up.railway.app/api/v1/catagory/add-catagory?catagory=${data.catagory}`, {
+      const response = await fetch(`http://bonnbackend.up.railway.app/api/v1/catagory/add-catagory?catagory=${data.catagory}`, {
         method: 'POST',
         body: catagoryData,
       });

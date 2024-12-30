@@ -77,7 +77,7 @@ function EditProduct() {
 
   const getProduct = async () => {
     try {
-      const response = await fetch(`https://bonntonn.up.railway.app/api/v1/products/product?productId=${productId}`, {
+      const response = await fetch(`http://bonnbackend.up.railway.app/api/v1/products/product?productId=${productId}`, {
         method: "GET"
       });
   
@@ -125,7 +125,7 @@ function EditProduct() {
   useEffect(() => {
     async function fetchData() {
       try {
-        const response = await fetch('https://bonntonn.up.railway.app/api/v1/catagory/get-catagory', {
+        const response = await fetch('http://bonnbackend.up.railway.app/api/v1/catagory/get-catagory', {
           method: 'GET',
         });
   
@@ -321,7 +321,7 @@ function EditProduct() {
   })
     console.log(formData)
     try {
-      const response = await fetch(`https://bonntonn.up.railway.app/api/v1/products/edit-product?productId=${productId}`, {
+      const response = await fetch(`http://bonnbackend.up.railway.app/api/v1/products/edit-product?productId=${productId}`, {
         method: "POST",
         body: formData
       })
@@ -364,7 +364,7 @@ function EditProduct() {
     const tagsArray = Array.from(tags); // Convert Set to Array
     tagsArray.forEach((tag, index) => setValue(`tags[${index}]`, tag));
     setCurrentData((prevData) => ({ ...prevData, tags: tagsArray }));
-    // console.log(currentData?.tags)
+    console.log(currentData?.tags)
   }, [tags]);
 
   // useEffect(() => {

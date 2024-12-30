@@ -23,17 +23,26 @@ function Products() {
 
   const handleDownload = async () => {
     try {
-        const response = await axios.get("https://bonntonn.up.railway.app/api/v1/products/download-products", {
-            responseType: "blob",
+        const response = await fetch("http://bonnbackend.up.railway.app/api/v1/products/download-products", {
+            method: "GET",
         });
-        const blob = new Blob([response.data], {
+
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+
+        const blob = await response.blob(); // Convert the response to a Blob
+        const file = new Blob([blob], {
             type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
         });
-        saveAs(blob, "Product Details.xlsx");
+
+        // Use FileSaver.js or a similar library to download the file
+        saveAs(file, "Product Details.xlsx");
     } catch (error) {
         console.error("Error downloading the Excel file:", error);
     }
 };
+
 
   return (
     <div className='w-5/6 z-40 mx-auto py-8'>

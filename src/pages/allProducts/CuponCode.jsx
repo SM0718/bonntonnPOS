@@ -345,7 +345,7 @@ function CuponCode() {
         ) : (
           <Table aria-label="Coupon Codes Table">
             <TableHeader>
-              <TableColumn>CUPON CODE</TableColumn>
+              <TableColumn>COUPON CODE</TableColumn>
               <TableColumn>MINIMUM ORDER VALUE</TableColumn>
               <TableColumn>DISCOUNT PERCENTAGE</TableColumn>
               <TableColumn>EXPIRY DATE</TableColumn>

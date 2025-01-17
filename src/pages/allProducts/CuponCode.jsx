@@ -156,7 +156,7 @@ function CuponCode() {
     <div className="w-full py-4 relative">
       <div className="w-full flex justify-end">
         <Button onPress={onCreateOpen} className="w-[200px] py-2 px-4 bg-indigo-600 text-white font-semibold rounded-lg hover:bg-indigo-700">
-          Create Cupon
+          Create Coupon
         </Button>
       </div>
 
@@ -254,7 +254,7 @@ function CuponCode() {
         <ModalContent>
           {(onClose) => (
             <>
-              <ModalHeader className="flex flex-col gap-1">Edit Cupon</ModalHeader>
+              <ModalHeader className="flex flex-col gap-1">Edit Coupon</ModalHeader>
               <ModalBody>
                 <form onSubmit={handleEditSubmit(onEditSubmit)} className="w-full mx-auto space-y-4 bg-white rounded">
                   <div>

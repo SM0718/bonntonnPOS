@@ -16,7 +16,7 @@ function Products() {
       slug: '/products'
     },
     {
-      name: "Cupon Codes",
+      name: "Coupon Codes",
       slug: '/products/cupon-codes'
     },
   ]

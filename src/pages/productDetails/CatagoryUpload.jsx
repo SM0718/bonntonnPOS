@@ -1,195 +1,46 @@
-// import React, { useState, useEffect } from 'react'
-// import Button from '../../components/Button'
-// import Input from '../../components/Input';
-// import {  Table,  TableHeader,  TableBody,  TableColumn,  TableRow,  TableCell} from "@nextui-org/table";
-// import { toast } from 'react-toastify'
-// import { useForm } from "react-hook-form";
-
-// function CatagoryUpload() {
-
-//   const [data, setData] = useState([])
-//   const [reloadData, setReloadData] = useState(false)
-//   const [showModal, setShowModal] = useState(false)
-//   const { register, handleSubmit, reset, formState: { errors } } = useForm();
-
-//   useEffect(() => {
-//     async function fetchData() {
-//         try {
-//             const response = await fetch('/api/v1/catagory/get-catagory', {
-//                 method: 'GET',
-//             });
-
-//             if (response.ok) {
-//                 const catagoryData = await response.json();
-//                 setData(catagoryData.data)
-//             }
-//         } catch (error) {
-//           toast.error(error, {
-//             position: "top-right",
-//             autoClose: 2000,
-//             theme: "dark",
-//         })
-//         }
-//     }
-//     fetchData();
-// }, [reloadData]);
-
-// const deleteCatagory = async(catagoryId, catagory) => {
-//   try {
-//     const response = await fetch(`/api/v1/catagory/delete-catagory?catagoryId=${catagoryId}`, {
-//       method: 'DELETE',
-//     })
-
-//     if(response.ok) {
-//       if(response.status === 204) {
-//         toast.error(`${catagory} Linked With Product`, {
-//           position: "top-right",
-//           autoClose: 2000,
-//           theme: "dark",
-//       })
-//       } else {
-//         const data = await response.json()
-//       if(data.success === true) {
-//         setReloadData(!reloadData)
-//         toast.success(`${catagory} Deleted Successfully`, {
-//           position: "top-right",
-//           autoClose: 2000,
-//           theme: "dark",
-//       })
-//       }
-//       }
-      
-//     }
-//   } catch (error) {
-//     toast.error(error, {
-//       position: "top-right",
-//       autoClose: 2000,
-//       theme: "dark",
-//   })
-//   }
-// }
-
-// const addCatagory = async(data) => {
-//   try {
-//     const response = await fetch(`/api/v1/catagory/add-catagory?catagory=${data.catagory}`, {
-//       method: 'POST'
-//     })
-
-//     if(response.ok) {
-//       if (response.status === 204) {
-//         toast.info(`${data.catagory} Already Exist`, {
-//           position: "top-right",
-//           autoClose: 2000,
-//           theme: "dark"
-//         })
-//         reset()
-//       } else {
-//           toast.success(`${data.catagory} Added Successfully`, {
-//             position: "top-right",
-//             autoClose: 2000,
-//             theme: "dark"
-//           })
-//           setReloadData(!reloadData)
-//           reset()
-//           setShowModal(false)
-//       } 
-//     }
-//   } catch (error) {
-//     toast.error(error, {
-//       position: "top-right",
-//       autoClose: 2000,
-//       theme: "dark"
-//     })
-//   }
-// }
-
-//   return (
-//     <div className="w-full py-8 relative">
-
-//       <div className='w-full flex justify-between'>
-//         <h1 className='trajan text-[28px]'>
-//           Catagory Details
-//         </h1>
-//         <div className='relative'>
-//           <Button onClick={() => setShowModal(!showModal)} className={`bg-[#285EFE] p-3 rounded-xl text-white`}>
-//             Add New Catagory               
-//           </Button>
-
-//           {
-//             showModal && <div className='w-[170px] h-[120px] my-2 rounded-xl absolute bg-slate-200'>
-//                   <form onSubmit={handleSubmit(addCatagory)} className='w-5/6 h-full py-4 mx-auto flex flex-col justify-between'>
-//                     <Input
-//                         type='text'
-//                         {...register(`catagory`, { required: 'Catagory is required' })}
-//                         className='w-full border-2 p-1 rounded-xl'
-//                         placeholder="Catagory"
-//                     />
-//                     {errors[`catagory`] && <p>{errors[`catagory`].message}</p>}
-//                     <Button type="submit" className={`bg-[#285EFE] p-2 text-[15px] rounded-xl text-white`}>
-//                         Add Catagory               
-//                     </Button>
-//                   </form>
-//               </div>
-//           }
-//         </div>
-        
-//       </div>
-
-//       <div className='w-full flex justify-center'>
-
-// <Table className='my-4' aria-label="Example static collection table">
-//       <TableHeader>
-//         <TableColumn className=''>CATAGORY</TableColumn>
-//         <TableColumn className=''>ACTIONS</TableColumn>
-//       </TableHeader>
-//       <TableBody className='bg-black'>
-//         { 
-//       data.map(item => <TableRow className='w-full flex justify-between' key={item._id}>
-//         <TableCell className='times text-[18px]'>
-//           {item.catagory}
-//         </TableCell>
-//         <TableCell className='times text-[18px] text-[#F00]'>
-//           <Button onClick={() => deleteCatagory(item._id, item.catagory)}>Delete Catagory</Button>
-//         </TableCell>
-//       </TableRow>)
-//     }
-//       </TableBody>
-//     </Table>
-//       </div>
-//     </div>
-//   )
-// }
-
-// export default CatagoryUpload
-
 
 import React, { useState, useEffect } from 'react';
-import Button from '../../components/Button';
-import Input from '../../components/Input';
+import { useForm } from 'react-hook-form';
+import { toast } from 'react-toastify';
 import {
+  Modal,
+  ModalContent,
+  ModalHeader,
+  ModalBody,
+  ModalFooter,
+  Button,
+  useDisclosure,
   Table,
   TableHeader,
-  TableBody,
   TableColumn,
+  TableBody,
   TableRow,
-  TableCell
-} from "@nextui-org/table";
-import { toast } from 'react-toastify';
-import { useForm } from "react-hook-form";
+  TableCell,
+  Input
+} from '@nextui-org/react';
 
 const CategoryUpload = () => {
-
   const Cross = () => (
     <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-      <path d="M18 6L6 18M6 6l12 12"/>
+      <path d="M18 6L6 18M6 6l12 12" />
     </svg>
   );
 
-  const [pic, setPic] = useState(null)
+  const [pic, setPic] = useState(null);
+  const [editPic, setEditPic] = useState(null);
   const [data, setData] = useState([]);
   const [reloadData, setReloadData] = useState(false);
-  const [showModal, setShowModal] = useState(false);
-  const { register, handleSubmit, reset, formState: { errors } } = useForm();
+  const [editModal, setEditModal] = useState(false);
+  const [editCategory, setEditCategory] = useState(null);
+  const {isOpen, onOpen, onOpenChange} = useDisclosure();
+  
+  const { 
+    register, 
+    handleSubmit, 
+    reset, 
+    setValue, 
+    formState: { errors } 
+  } = useForm();
 
   useEffect(() => {
     async function fetchData() {
@@ -200,13 +51,14 @@ const CategoryUpload = () => {
 
         if (response.ok) {
           const categoryData = await response.json();
+          console.log(categoryData)
           setData(categoryData.data);
         }
       } catch (error) {
-        toast.error(error, {
-          position: "top-right",
+        toast.error(error.message, {
+          position: 'top-right',
           autoClose: 2000,
-          theme: "dark",
+          theme: 'dark',
         });
       }
     }
@@ -222,43 +74,41 @@ const CategoryUpload = () => {
       if (response.ok) {
         if (response.status === 204) {
           toast.error(`${category} Linked With Product`, {
-            position: "top-right",
+            position: 'top-right',
             autoClose: 2000,
-            theme: "dark",
+            theme: 'dark',
           });
         } else {
           const data = await response.json();
           if (data.success === true) {
             setReloadData(!reloadData);
             toast.success(`${category} Deleted Successfully`, {
-              position: "top-right",
+              position: 'top-right',
               autoClose: 2000,
-              theme: "dark",
+              theme: 'dark',
             });
           }
         }
       }
     } catch (error) {
-      toast.error(error, {
-        position: "top-right",
+      toast.error(error.message, {
+        position: 'top-right',
         autoClose: 2000,
-        theme: "dark",
+        theme: 'dark',
       });
     }
   };
 
   const addCategory = async (data) => {
-    console.log(data, pic);
     try {
       const catagoryData = new FormData();
       catagoryData.append('catagoryDesc', data.description);
       catagoryData.append('catagoryPic', pic);
-      console.log(catagoryData);
       const response = await fetch(`https://bonnbackend.up.railway.app/api/v1/catagory/add-catagory?catagory=${data.catagory}`, {
         method: 'POST',
         body: catagoryData,
       });
-  
+
       if (response.ok) {
         if (response.status === 204) {
           toast.info(`${data.catagory} Already Exist`, {
@@ -266,8 +116,6 @@ const CategoryUpload = () => {
             autoClose: 2000,
             theme: 'dark',
           });
-          setPic(null); // Reset the image field
-          reset();
         } else {
           toast.success(`${data.catagory} Added Successfully`, {
             position: 'top-right',
@@ -275,118 +123,243 @@ const CategoryUpload = () => {
             theme: 'dark',
           });
           setReloadData(!reloadData);
-          setPic(null); // Reset the image field
-          reset();
-          setShowModal(false);
         }
+        setPic(null);
+        reset();
+        onOpenChange(false);
       }
     } catch (error) {
-      toast.error(error, {
+      toast.error(error.message, {
         position: 'top-right',
         autoClose: 2000,
         theme: 'dark',
       });
     }
   };
-  
+
+  const handleEditClick = (item) => {
+    setEditCategory(item);
+    setEditModal(true);
+    setValue('editCatagory', item.catagory);
+    setValue('editDescription', item.catagoryDesc);
+    setEditPic(item.catagoryPic);
+  };
+
+  const updateCategory = async (data) => {
+    try {
+      const catagoryData = new FormData();
+      catagoryData.append('catagory', data.editCatagory);
+      catagoryData.append('catagoryDesc', data.editDescription);
+      if (editPic) catagoryData.append('catagoryPic', editPic);
+
+      const response = await fetch(`https://bonnbackend.up.railway.app/api/v1/catagory/edit-catagory?id=${editCategory._id}`, {
+        method: 'PUT',
+        body: catagoryData,
+      });
+
+      if (response.ok) {
+        toast.success(`${data.editCatagory} Updated Successfully`, {
+          position: 'top-right',
+          autoClose: 2000,
+          theme: 'dark',
+        });
+        setReloadData(!reloadData);
+        setEditModal(false);
+      }
+    } catch (error) {
+      toast.error(error.message, {
+        position: 'top-right',
+        autoClose: 2000,
+        theme: 'dark',
+      });
+    }
+  };
+
+  const getSrc = (value) => {
+    if (value instanceof Blob) {
+      return URL.createObjectURL(value);
+    }
+    return value;
+  };
 
   return (
     <div className="w-full py-8 relative">
       <div className="w-full flex justify-between mb-6">
         <h1 className="trajan text-2xl">Category Details</h1>
-        <div className="relative">
-          <Button
-            onClick={() => setShowModal(!showModal)}
-            className="bg-blue-600 px-4 py-2 rounded-xl text-white"
-          >
-            Add New Category
-          </Button>
-
-          {showModal && (
-            <div className="absolute right-0 w-64 mt-2 p-4 rounded-xl bg-slate-200 shadow-lg z-50">
-              <form onSubmit={handleSubmit(addCategory)} className="space-y-4">
-                <Input
-                  type="text"
-                  {...register('catagory', { required: 'Category is required' })}
-                  className="w-full border-2 p-2 rounded-xl"
-                  placeholder="Category"
-                />
-                {errors.catagory && (
-                  <p className="text-red-500 text-sm">{errors.catagory.message}</p>
-                )}
-
-                <Input
-                  type="textarea"
-                  {...register('description', { required: 'Category Description is required' })}
-                  className="w-full border-2 p-2 rounded-xl"
-                  placeholder="Description"
-                />
-                {errors.catagory && (
-                  <p className="text-red-500 text-sm">{errors.catagory.message}</p>
-                )}
-
-                  {!pic ? (
-                      <Input
-                          type="file"
-                          accept="image/*"
-                          onChange={(e) => setPic(e.target.files[0])}
-                          className="w-full"
-                      />
-                  ) : (
-                      <div className="relative">
-                          <img
-                              src={URL.createObjectURL(pic)}
-                              alt={`Catagory Pic`}
-                              className="w-full h-40 object-cover rounded"
-                          />
-                          <button
-                              onClick={() => setPic(null)}
-                              type="button"
-                              className="absolute -top-2 -right-2"
-                          >
-                              <Cross />
-                          </button>
-                      </div>
-                  )}
-
-                
-                <Button
-                  type="submit"
-                  className="w-full bg-blue-600 py-2 rounded-xl text-white"
-                >
-                  Add Category
-                </Button>
-              </form>
-            </div>
-          )}
-        </div>
+        <Button
+          onPress={onOpen}
+          className="bg-blue-600 text-white times"
+        >
+          Add New Category
+        </Button>
       </div>
 
+      <Modal 
+        isOpen={isOpen} 
+        onOpenChange={onOpenChange}
+        placement="center"
+        className="max-w-md"
+      >
+        <ModalContent>
+          {(onClose) => (
+            <>
+              <ModalHeader className="flex flex-col gap-1 times">Add Category</ModalHeader>
+              <ModalBody>
+                <form id="addCategoryForm" onSubmit={handleSubmit(addCategory)} className="space-y-4">
+                  <Input
+                    label="Category Name"
+                    {...register('catagory', { required: 'Category is required' })}
+                    isInvalid={!!errors.catagory}
+                    errorMessage={errors.catagory?.message}
+                    className='times'
+                  />
+
+                  <Input
+                    label="Description"
+                    {...register('description', { required: 'Category Description is required' })}
+                    isInvalid={!!errors.description}
+                    errorMessage={errors.description?.message}
+                    className='times'
+                  />
+
+                  {!pic ? (
+                    <Input
+                      className='mt-4'
+                      type="file"
+                      accept="image/*"
+                      onChange={(e) => setPic(e.target.files[0])}
+                    />
+                  ) : (
+                    <div className="relative mt-4">
+                      <img
+                        src={URL.createObjectURL(pic)}
+                        alt="Category Pic"
+                        className="w-full h-40 object-cover rounded times"
+                      />
+                      <Button
+                        isIconOnly
+                        size="sm"
+                        className="absolute -top-2 -right-2"
+                        onClick={() => setPic(null)}
+                      >
+                        <Cross />
+                      </Button>
+                    </div>
+                  )}
+                </form>
+              </ModalBody>
+              <ModalFooter>
+                <Button color="danger" variant="light" onPress={onClose}>
+                  Cancel
+                </Button>
+                <Button color="primary" type="submit" form="addCategoryForm">
+                  Add Category
+                </Button>
+              </ModalFooter>
+            </>
+          )}
+        </ModalContent>
+      </Modal>
+
       <div className="w-full">
-        <Table aria-label="Category management table" className="min-w-full">
+        <Table aria-label="Category management table">
           <TableHeader>
-            <TableColumn className="w-2/3 text-left px-6 py-3">CATEGORY</TableColumn>
-            <TableColumn className="w-1/3 text-center px-6 py-3">ACTIONS</TableColumn>
+            <TableColumn className='times'>CATEGORY</TableColumn>
+            <TableColumn className='times'>DESCRIPTION</TableColumn>
+            <TableColumn className='times' align="center">ACTIONS</TableColumn>
           </TableHeader>
           <TableBody>
             {data.map(item => (
-              <TableRow key={item._id} className="border-t">
-                <TableCell className="w-2/3 px-6 py-4 text-lg times">
-                  {item.catagory}
-                </TableCell>
-                <TableCell className="w-1/3 px-6 py-4 text-center">
-                  <Button
-                    onClick={() => deleteCategory(item._id, item.catagory)}
-                    className="text-red-500 hover:text-red-700 times text-lg"
-                  >
-                    Delete Category
-                  </Button>
+              <TableRow key={item._id}>
+                <TableCell className="text-lg times">{item.catagory}</TableCell>
+                <TableCell className='times'>{item.catagoryDesc}</TableCell>
+                <TableCell className='times'>
+                  <div className="flex justify-center gap-4">
+                    <Button
+                      color="primary"
+                      variant="light"
+                      onClick={() => handleEditClick(item)}
+                    >
+                      Edit
+                    </Button>
+                    <Button
+                      color="danger"
+                      variant="light"
+                      onClick={() => deleteCategory(item._id, item.catagory)}
+                    >
+                      Delete
+                    </Button>
+                  </div>
                 </TableCell>
               </TableRow>
             ))}
           </TableBody>
         </Table>
       </div>
+
+      <Modal 
+        isOpen={editModal} 
+        onOpenChange={(open) => setEditModal(open)}
+        placement="center"
+        className="max-w-md"
+      >
+        <ModalContent>
+          {(onClose) => (
+            <>
+              <ModalHeader className="flex flex-col gap-1">Edit Category</ModalHeader>
+              <ModalBody>
+                <form id="editCategoryForm" onSubmit={handleSubmit(updateCategory)} className="space-y-4">
+                  <Input
+                    label="Category Name"
+                    {...register('editCatagory', { required: 'Category is required' })}
+                    isInvalid={!!errors.editCatagory}
+                    errorMessage={errors.editCatagory?.message}
+                  />
+
+                  <Input
+                    label="Description"
+                    {...register('editDescription', { required: 'Description is required' })}
+                    isInvalid={!!errors.editDescription}
+                    errorMessage={errors.editDescription?.message}
+                  />
+
+                  {!editPic ? (
+                    <Input
+                      type="file"
+                      accept="image/*"
+                      onChange={(e) => setEditPic(e.target.files[0])}
+                    />
+                  ) : (
+                    <div className="relative">
+                      <img
+                        src={getSrc(editPic)}
+                        alt="Category Pic"
+                        className="w-full h-40 object-cover rounded"
+                      />
+                      <Button
+                        isIconOnly
+                        size="sm"
+                        className="absolute -top-2 -right-2"
+                        onClick={() => setEditPic(null)}
+                      >
+                        <Cross />
+                      </Button>
+                    </div>
+                  )}
+                </form>
+              </ModalBody>
+              <ModalFooter>
+                <Button color="danger" variant="light" onPress={onClose}>
+                  Cancel
+                </Button>
+                <Button color="primary" type="submit" form="editCategoryForm">
+                  Update Category
+                </Button>
+              </ModalFooter>
+            </>
+          )}
+        </ModalContent>
+      </Modal>
     </div>
   );
 };

@@ -13,7 +13,12 @@ import {
   Orders,
   ProductDetails,
   CatagoryUpload,
-  EditProduct
+  EditProduct,
+  CourseUpload,
+  EbooksUpload,
+  AnalyticsDashboard,
+  EbookAnalytics,
+  ContentManagement
 } from './pages/index.js'
 import AllProducts from './pages/allProducts/AllProducts.jsx'
 import {NextUIProvider} from '@nextui-org/react'
@@ -33,6 +38,11 @@ const router = createBrowserRouter(
       </Route>
       <Route path='/orders' element={<Orders />}/>
       <Route path='/edit-product/:productId' element={<EditProduct />}/>
+      <Route path='/course-upload' element={<CourseUpload />}/>
+      <Route path='/ebook-upload' element={<EbooksUpload />}/>
+      <Route path='/course-analytics' element={<AnalyticsDashboard />}/>
+      <Route path='/ebook-analytics' element={<EbookAnalytics />}/>
+      <Route path='/contents' element={<ContentManagement />}/>
     </Route>
   ))
 

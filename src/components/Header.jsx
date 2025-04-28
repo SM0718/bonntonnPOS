@@ -1,9 +1,6 @@
 import React, { useState } from 'react'
 import { NavLink } from 'react-router-dom'
-import ProductUploadIcon from '../svg/ProductUploadIcon'
-import Products from '../svg/Products'
-import Analytics from '../svg/Analytics'
-import OrdersIcon from '../svg/OrdersIcon'
+import { BookA, ChartLine, Upload, PackageSearch, Package2, BookCopy, ReceiptText, ChartNoAxesCombined, ChartNetwork} from 'lucide-react'
 
 function Header() {
 
@@ -11,24 +8,49 @@ function Header() {
 
     const headerItems = [
         {
-            name: 'Analytics',
-            icon: <Analytics />,
+            name: 'Product Analytics',
+            icon: <ChartLine />,
             slug: '/'
         },
         {
+            name: 'Course Analytics',
+            icon: <ChartNoAxesCombined />,
+            slug: '/course-analytics'
+        },
+        {
+            name: 'Ebooks Analytics',
+            icon: <ChartNetwork />,
+            slug: '/ebook-analytics'
+        },
+        {
             name: 'Upload Product',
-            icon: <ProductUploadIcon />,
+            icon: <Upload />,
             slug: '/product-upload'
         },
         {
             name: 'All Product',
-            icon: <Products />,
+            icon: <PackageSearch />,
             slug: '/products'
         },
         {
             name: 'Orders',
-            icon: <OrdersIcon />,
+            icon: <Package2 />,
             slug: '/orders'
+        },
+        {
+            name: 'Course Upload',
+            icon: <BookA />,
+            slug: '/course-upload'
+        },
+        {
+            name: 'Ebooks Upload',
+            icon: <BookCopy />,
+            slug: '/ebook-upload'
+        },
+        {
+            name: 'All Content',
+            icon: <ReceiptText />,
+            slug: '/contents'
         },
     ]
   
@@ -36,7 +58,7 @@ function Header() {
         <div 
         onMouseEnter={() => setOpen(true)} 
         onMouseLeave={() => setOpen(false)} 
-        className={`h-screen fixed bg-black text-white ${open ? "w-64" : "w-16"} transition-all flex items-center justify-center gap-8 z-50`}>
+        className={`h-screen fixed bg-black text-white ${open ? "w-64" : "w-12"} transition-all flex items-center justify-start gap-8 z-50`}>
             <ul className='flex flex-col gap-6'>
                 {headerItems.map(item => (
                     <NavLink key={item.name} 

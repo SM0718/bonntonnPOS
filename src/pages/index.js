@@ -6,7 +6,11 @@ import Orders from "./Orders";
 import ProductDetails from "./productDetails/ProductDetails";
 import CatagoryUpload from "./productDetails/CatagoryUpload";
 import EditProduct from "./productDetails/EditProduct"
-
+import CourseUpload from "./CourseUpload"
+import EbooksUpload from './EbooksUpload'
+import AnalyticsDashboard from "./CourseAnalytics"
+import EbookAnalytics from "./EbookAnalytics"
+import ContentManagement from "./ContentManagementSystem"
 export {
     UploadProduct,
     Products,
@@ -15,5 +19,10 @@ export {
     CuponCode,
     ProductDetails,
     CatagoryUpload,
-    EditProduct
+    EditProduct,
+    CourseUpload,
+    EbooksUpload,
+    AnalyticsDashboard,
+    EbookAnalytics,
+    ContentManagement
 }

@@ -21,7 +21,11 @@ import {
   Clock,
   ChevronRight,
   Eye,
-  Megaphone
+  Megaphone,
+  Users,
+  ShoppingCart,
+  BarChart3,
+  Activity,
 } from 'lucide-react';
 import axios from 'axios';
 import { saveAs } from 'file-saver';
@@ -31,7 +35,6 @@ import { Bar } from 'react-chartjs-2';
 
 ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend);
 
-// Sample data for the dashboard
 const salesData = {
   daily: [
     { day: 'Mon', sales: 2400 },
@@ -57,10 +60,10 @@ const salesData = {
     { month: 'Dec', sales: 95000 }
   ],
   quarterly: [
-    { quarter: 'Q1', sales: 131000 }, // Jan-Mar
-    { quarter: 'Q2', sales: 170000 }, // Apr-Jun
-    { quarter: 'Q3', sales: 192000 }, // Jul-Sep
-    { quarter: 'Q4', sales: 242000 }  // Oct-Dec
+    { quarter: 'Q1', sales: 131000 },
+    { quarter: 'Q2', sales: 170000 },
+    { quarter: 'Q3', sales: 192000 },
+    { quarter: 'Q4', sales: 242000 }
   ],
   yearly: [
     { year: '2023', sales: 600000 },
@@ -129,11 +132,30 @@ const digitalMarketingStats = {
   ]
 };
 
+const statusColors = {
+  Delivered: 'bg-emerald-50 text-emerald-700 border border-emerald-200',
+  Processing: 'bg-blue-50 text-blue-700 border border-blue-200',
+  Shipped: 'bg-purple-50 text-purple-700 border border-purple-200',
+  Pending: 'bg-amber-50 text-amber-700 border border-amber-200',
+  Returned: 'bg-red-50 text-red-700 border border-red-200',
+  Active: 'bg-emerald-50 text-emerald-700 border border-emerald-200',
+  Completed: 'bg-blue-50 text-blue-700 border border-blue-200',
+  Paused: 'bg-surface-100 text-surface-600 border border-surface-200',
+};
+
+const cardColors = {
+  blue: 'bg-blue-50 text-blue-600',
+  green: 'bg-emerald-50 text-emerald-600',
+  purple: 'bg-purple-50 text-purple-600',
+  amber: 'bg-amber-50 text-amber-600',
+  red: 'bg-red-50 text-red-600',
+};
+
 function ProductAnalytics() {
   const [timeRange, setTimeRange] = useState('weekly');
   const [salesTimeRange, setSalesTimeRange] = useState('daily');
-  const [isTopProductsExpanded, setIsTopProductsExpanded] = useState(false);
-  const [isCouponsExpanded, setIsCouponsExpanded] = useState(false);
+  const [isTopProductsExpanded, setIsTopProductsExpanded] = useState(true);
+  const [isCouponsExpanded, setIsCouponsExpanded] = useState(true);
   const [isRecentOrdersExpanded, setIsRecentOrdersExpanded] = useState(true);
   const [isMarketingExpanded, setIsMarketingExpanded] = useState(true);
   const [error, setError] = useState(null);
@@ -156,20 +178,6 @@ function ProductAnalytics() {
     }
   };
 
-  const getStatusColor = (status) => {
-    switch(status) {
-      case 'Delivered': return 'bg-green-100 text-green-800';
-      case 'Processing': return 'bg-blue-100 text-blue-800';
-      case 'Shipped': return 'bg-purple-100 text-purple-800';
-      case 'Pending': return 'bg-yellow-100 text-yellow-800';
-      case 'Returned': return 'bg-red-100 text-red-800';
-      case 'Active': return 'bg-green-100 text-green-800';
-      case 'Completed': return 'bg-blue-100 text-blue-800';
-      case 'Paused': return 'bg-gray-100 text-gray-800';
-      default: return 'bg-gray-100 text-gray-800';
-    }
-  };
-
   const formatCurrency = (amount) => {
     return new Intl.NumberFormat('en-IN', { 
       style: 'currency', 
@@ -178,7 +186,6 @@ function ProductAnalytics() {
     }).format(amount);
   };
 
-  // Chart data for Chart.js
   const chartData = {
     labels: salesTimeRange === 'daily' 
       ? salesData.daily.map(item => item.day)
@@ -196,10 +203,11 @@ function ProductAnalytics() {
         : salesTimeRange === 'quarterly'
         ? salesData.quarterly.map(item => item.sales)
         : salesData.yearly.map(item => item.sales),
-      backgroundColor: 'rgba(59, 130, 246, 0.6)',
-      borderColor: 'rgb(59, 130, 246)',
+      backgroundColor: 'rgba(16, 185, 129, 0.6)',
+      borderColor: 'rgb(16, 185, 129)',
       borderWidth: 1,
-      hoverBackgroundColor: 'rgba(59, 130, 246, 0.8)',
+      hoverBackgroundColor: 'rgba(16, 185, 129, 0.8)',
+      borderRadius: 6,
     }],
   };
 
@@ -209,9 +217,12 @@ function ProductAnalytics() {
     plugins: {
       legend: { display: false },
       tooltip: {
-        backgroundColor: 'rgba(0, 0, 0, 0.8)',
-        titleFont: { size: 14 },
-        bodyFont: { size: 12 },
+        backgroundColor: 'rgba(17, 24, 39, 0.9)',
+        titleFont: { family: 'Inter', size: 13, weight: '500' },
+        bodyFont: { family: 'Inter', size: 12 },
+        padding: 12,
+        cornerRadius: 8,
+        displayColors: false,
         callbacks: {
           label: (context) => `Sales: ${formatCurrency(context.parsed.y)}`,
         },
@@ -222,33 +233,49 @@ function ProductAnalytics() {
         beginAtZero: true,
         ticks: {
           callback: (value) => `₹${(value / 1000).toFixed(0)}K`,
+          font: { family: 'Inter', size: 11 },
+          color: '#9CA3AF',
+          padding: 8,
         },
-        grid: { color: 'rgba(229, 231, 235, 0.5)' },
+        grid: { color: 'rgba(229, 231, 235, 0.4)', drawBorder: false },
+        border: { display: false },
       },
       x: {
         grid: { display: false },
+        ticks: { font: { family: 'Inter', size: 11 }, color: '#9CA3AF', padding: 8 },
+        border: { display: false },
       },
     },
     animation: {
-      duration: 1000,
+      duration: 800,
       easing: 'easeOutQuart',
     },
   };
 
+  const overviewCards = [
+    { title: 'Total Revenue', value: formatCurrency(revenueStats.totalRevenue), growth: revenueStats.revenueGrowth, icon: DollarSign, color: 'green' },
+    { title: 'Total Orders', value: orderStats.totalOrders.toLocaleString(), growth: orderStats.orderGrowth, icon: ShoppingCart, color: 'blue' },
+    { title: 'Total Customers', value: customerStats.totalCustomers.toLocaleString(), growth: customerStats.customerGrowth, icon: Users, color: 'purple' },
+    { title: 'Avg. Order Value', value: formatCurrency(revenueStats.averageOrderValue), growth: 5.2, icon: CreditCard, color: 'amber' },
+  ];
+
   return (
-    <div className="bg-gradient-to-br from-gray-50 to-gray-100 min-h-screen w-full font-sans">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-        {/* Header Section */}
+    <div className="p-8">
+      <div className="max-w-7xl mx-auto">
+        {/* Header */}
         <motion.div 
-          initial={{ opacity: 0, y: -20 }}
+          initial={{ opacity: 0, y: -10 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5 }}
-          className="flex justify-between items-center mb-10"
+          transition={{ duration: 0.3 }}
+          className="flex justify-between items-center mb-8"
         >
-          <h1 className="text-4xl font-extrabold text-gray-900 tracking-tight">Analytics Dashboard</h1>
-          <div className="flex space-x-4">
+          <div>
+            <h1 className="text-2xl font-bold text-surface-900 tracking-tight">Analytics Dashboard</h1>
+            <p className="text-sm text-surface-500 mt-1">Track your business performance and insights</p>
+          </div>
+          <div className="flex items-center gap-3">
             <select 
-              className="bg-white border border-gray-200 rounded-lg px-4 py-2 text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500 shadow-sm transition-all duration-300"
+              className="input-base w-auto pr-8"
               value={timeRange}
               onChange={(e) => setTimeRange(e.target.value)}
             >
@@ -258,157 +285,147 @@ function ProductAnalytics() {
               <option value="yearly">Last Year</option>
             </select>
             <motion.button 
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
+              whileHover={{ scale: 1.02 }}
+              whileTap={{ scale: 0.98 }}
               onClick={handleDownload}
-              className="flex items-center space-x-2 bg-blue-600 hover:bg-blue-700 text-white px-5 py-2 rounded-lg shadow-md transition-all duration-300"
+              className="btn-primary"
             >
-              <Download size={18} />
-              <span>Export Data</span>
+              <Download size={16} />
+              <span>Export</span>
             </motion.button>
           </div>
         </motion.div>
 
-        {/* Error Message */}
+        {/* Error */}
         <AnimatePresence>
           {error && (
             <motion.div
               initial={{ opacity: 0, y: -10 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -10 }}
-              className="mb-6 p-4 bg-red-100 text-red-800 rounded-lg flex items-center"
+              className="mb-6 p-4 bg-red-50 text-red-700 rounded-xl flex items-center gap-2 border border-red-200"
             >
-              <AlertCircle size={20} className="mr-2" />
-              {error}
+              <AlertCircle size={18} />
+              <span className="text-sm font-medium">{error}</span>
             </motion.div>
           )}
         </AnimatePresence>
 
         {/* Overview Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-10">
-          {[
-            { title: 'Total Revenue', value: formatCurrency(revenueStats.totalRevenue), growth: revenueStats.revenueGrowth, icon: DollarSign, color: 'blue' },
-            { title: 'Total Orders', value: orderStats.totalOrders.toLocaleString(), growth: orderStats.orderGrowth, icon: ShoppingBag, color: 'purple' },
-            { title: 'Total Customers', value: customerStats.totalCustomers.toLocaleString(), growth: customerStats.customerGrowth, icon: User, color: 'green' },
-            { title: 'Average Order Value', value: formatCurrency(revenueStats.averageOrderValue), growth: 5.2, icon: CreditCard, color: 'amber' },
-          ].map((stat, index) => (
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5 mb-8">
+          {overviewCards.map((stat, index) => (
             <motion.div
               key={stat.title}
-              initial={{ opacity: 0, y: 20 }}
+              initial={{ opacity: 0, y: 15 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5, delay: index * 0.1 }}
-              className="bg-white rounded-xl shadow-lg p-6 border border-gray-100 hover:shadow-xl transition-all duration-300"
+              transition={{ duration: 0.35, delay: index * 0.07 }}
+              className="card-hover p-5"
             >
-              <div className="flex justify-between items-center">
+              <div className="flex justify-between items-start">
                 <div>
-                  <p className="text-sm text-gray-500 mb-2">{stat.title}</p>
-                  <h3 className="text-2xl font-bold text-gray-900">{stat.value}</h3>
-                  <div className="flex items-center mt-3">
-                    <span className={`flex items-center text-sm ${stat.growth >= 0 ? 'text-green-600' : 'text-red-600'}`}>
-                      {stat.growth >= 0 ? <ArrowUpRight size={16} /> : <ArrowDownRight size={16} />}
+                  <p className="text-xs font-medium text-surface-500 uppercase tracking-wide">{stat.title}</p>
+                  <h3 className="text-2xl font-bold text-surface-900 mt-1.5">{stat.value}</h3>
+                  <div className="flex items-center mt-2">
+                    <span className={`inline-flex items-center gap-0.5 text-xs font-semibold ${stat.growth >= 0 ? 'text-emerald-600' : 'text-red-500'}`}>
+                      {stat.growth >= 0 ? <ArrowUpRight size={14} /> : <ArrowDownRight size={14} />}
                       {Math.abs(stat.growth)}%
                     </span>
-                    <span className="text-xs text-gray-500 ml-2">vs last {timeRange}</span>
+                    <span className="text-xs text-surface-400 ml-1.5">vs last {timeRange}</span>
                   </div>
                 </div>
-                <div className={`bg-${stat.color}-50 p-3 rounded-full`}>
-                  <stat.icon size={24} className={`text-${stat.color}-600`} />
+                <div className={`w-10 h-10 rounded-xl flex items-center justify-center ${cardColors[stat.color]}`}>
+                  <stat.icon size={20} />
                 </div>
               </div>
             </motion.div>
           ))}
         </div>
 
-        {/* Charts Section */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-10">
+        {/* Charts Row */}
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-5 mb-8">
           {/* Sales Chart */}
           <motion.div
-            initial={{ opacity: 0, scale: 0.95 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ duration: 0.5 }}
-            className="bg-white rounded-xl shadow-lg p-6 border border-gray-100 lg:col-span-2"
+            initial={{ opacity: 0, y: 15 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.4, delay: 0.2 }}
+            className="card p-6 lg:col-span-2"
           >
             <div className="flex justify-between items-center mb-6">
-              <h3 className="text-xl font-semibold text-gray-900">Sales Overview</h3>
-              <div className="flex space-x-2">
+              <div>
+                <h3 className="text-base font-semibold text-surface-900">Sales Overview</h3>
+                <p className="text-xs text-surface-500 mt-0.5">Revenue performance over time</p>
+              </div>
+              <div className="flex bg-surface-100 rounded-lg p-0.5">
                 {['daily', 'monthly', 'quarterly', 'yearly'].map((range) => (
-                  <motion.button 
+                  <button 
                     key={range}
-                    whileHover={{ scale: 1.05 }}
-                    whileTap={{ scale: 0.95 }}
-                    className={`px-4 py-2 rounded-lg text-sm font-medium capitalize ${salesTimeRange === range ? 'bg-blue-600 text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'}`}
+                    className={`px-3 py-1.5 rounded-md text-xs font-medium capitalize transition-all duration-150 ${
+                      salesTimeRange === range 
+                        ? 'bg-white text-surface-900 shadow-sm' 
+                        : 'text-surface-500 hover:text-surface-700'
+                    }`}
                     onClick={() => setSalesTimeRange(range)}
                   >
                     {range}
-                  </motion.button>
+                  </button>
                 ))}
               </div>
             </div>
-            <div className="h-80">
+            <div className="h-72">
               <Bar ref={chartRef} data={chartData} options={chartOptions} />
             </div>
           </motion.div>
 
-          {/* Order Status Cards */}
+          {/* Order Status */}
           <motion.div
-            initial={{ opacity: 0, scale: 0.95 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ duration: 0.5 }}
-            className="bg-white rounded-xl shadow-lg p-6 border border-gray-100"
+            initial={{ opacity: 0, y: 15 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.4, delay: 0.25 }}
+            className="card p-6"
           >
-            <h3 className="text-xl font-semibold text-gray-900 mb-6">Order Status</h3>
-            <div className="space-y-4">
+            <h3 className="text-base font-semibold text-surface-900 mb-5">Order Status</h3>
+            <div className="space-y-3">
               {[
-                { label: 'Pending', value: orderStats.pendingOrders, icon: Clock, color: 'yellow' },
-                { label: 'Delivered', value: orderStats.deliveredOrders, icon: Truck, color: 'green' },
-                { label: 'Returned', value: orderStats.returnedOrders, icon: Package, color: 'red' },
+                { label: 'Pending', value: orderStats.pendingOrders, icon: Clock, color: 'text-amber-500', bg: 'bg-amber-50' },
+                { label: 'Delivered', value: orderStats.deliveredOrders, icon: Truck, color: 'text-emerald-500', bg: 'bg-emerald-50' },
+                { label: 'Returned', value: orderStats.returnedOrders, icon: Package, color: 'text-red-500', bg: 'bg-red-50' },
               ].map((status) => (
-                <motion.div
-                  key={status.label}
-                  whileHover={{ scale: 1.02 }}
-                  className={`p-4 bg-${status.color}-50 rounded-lg`}
-                >
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center">
-                      <status.icon size={20} className={`text-${status.color}-600 mr-3`} />
-                      <span className="text-gray-700 font-medium">{status.label}</span>
+                <div key={status.label} className="flex items-center justify-between p-3 rounded-lg bg-surface-50 hover:bg-surface-100 transition-colors">
+                  <div className="flex items-center gap-3">
+                    <div className={`w-8 h-8 rounded-lg ${status.bg} flex items-center justify-center`}>
+                      <status.icon size={16} className={status.color} />
                     </div>
-                    <span className="text-lg font-semibold text-gray-900">{status.value.toLocaleString()}</span>
+                    <span className="text-sm font-medium text-surface-700">{status.label}</span>
                   </div>
-                </motion.div>
+                  <span className="text-sm font-bold text-surface-900">{status.value.toLocaleString()}</span>
+                </div>
               ))}
-              <motion.div
-                whileHover={{ scale: 1.05 }}
-                className="pt-2"
-              >
-                <button className="w-full flex items-center justify-center text-blue-600 hover:text-blue-700 text-sm font-medium">
-                  View detailed report
-                  <ChevronRight size={16} className="ml-1" />
-                </button>
-              </motion.div>
             </div>
+            <button className="w-full mt-4 flex items-center justify-center gap-1.5 text-sm font-medium text-brand-600 hover:text-brand-700 transition-colors py-2">
+              View detailed report
+              <ChevronRight size={14} />
+            </button>
           </motion.div>
         </div>
 
-        {/* Top Products & Coupons Section */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-10">
+        {/* Top Products & Coupons */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-5 mb-8">
           {/* Top Products */}
           <motion.div
-            initial={{ opacity: 0, y: 20 }}
+            initial={{ opacity: 0, y: 15 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5 }}
-            className="bg-white rounded-xl shadow-lg p-6 border border-gray-100"
+            transition={{ duration: 0.4, delay: 0.3 }}
+            className="card"
           >
-            <div className="flex justify-between items-center mb-6">
-              <h3 className="text-xl font-semibold text-gray-900">Top Products</h3>
-              <motion.button
-                whileHover={{ scale: 1.05 }}
+            <div className="flex justify-between items-center p-5 border-b border-surface-100">
+              <h3 className="text-base font-semibold text-surface-900">Top Products</h3>
+              <button
                 onClick={() => setIsTopProductsExpanded(!isTopProductsExpanded)}
-                className="text-blue-600 hover:text-blue-700 text-sm font-medium flex items-center"
+                className="text-xs font-medium text-brand-600 hover:text-brand-700 flex items-center gap-1"
               >
                 {isTopProductsExpanded ? 'Collapse' : 'View All'}
-                {isTopProductsExpanded ? <ChevronUp size={16} className="ml-1" /> : <ChevronDown size={16} className="ml-1" />}
-              </motion.button>
+                {isTopProductsExpanded ? <ChevronUp size={14} /> : <ChevronDown size={14} />}
+              </button>
             </div>
             <AnimatePresence>
               {isTopProductsExpanded && (
@@ -416,31 +433,30 @@ function ProductAnalytics() {
                   initial={{ height: 0, opacity: 0 }}
                   animate={{ height: 'auto', opacity: 1 }}
                   exit={{ height: 0, opacity: 0 }}
-                  transition={{ duration: 0.3 }}
-                  className="overflow-x-auto"
+                  transition={{ duration: 0.25 }}
+                  className="overflow-hidden"
                 >
-                  <table className="min-w-full">
+                  <table className="w-full">
                     <thead>
-                      <tr className="border-b border-gray-200">
-                        <th className="text-left py-3 px-4 text-sm font-medium text-gray-500">Product</th>
-                        <th className="text-right py-3 px-4 text-sm font-medium text-gray-500">Orders</th>
-                        <th className="text-right py-3 px-4 text-sm font-medium text-gray-500">Revenue</th>
+                      <tr className="border-b border-surface-100">
+                        <th className="text-left py-3 px-5 text-xs font-medium text-surface-500 uppercase tracking-wide">Product</th>
+                        <th className="text-right py-3 px-5 text-xs font-medium text-surface-500 uppercase tracking-wide">Orders</th>
+                        <th className="text-right py-3 px-5 text-xs font-medium text-surface-500 uppercase tracking-wide">Revenue</th>
                       </tr>
                     </thead>
                     <tbody>
-                      {topProducts.map((product) => (
-                        <tr
-                          key={product.id}
-                          className="border-b border-gray-100 hover:bg-gray-50 transition-colors duration-200"
-                        >
-                          <td className="py-3 px-4">
-                            <div className="flex items-center">
-                              <div className="h-8 w-8 bg-gray-200 rounded-md mr-3"></div>
-                              <span className="text-sm font-medium text-gray-700">{product.name}</span>
+                      {topProducts.map((product, idx) => (
+                        <tr key={product.id} className="border-b border-surface-50 last:border-0 hover:bg-surface-50 transition-colors">
+                          <td className="py-3 px-5">
+                            <div className="flex items-center gap-3">
+                              <div className="w-8 h-8 rounded-lg bg-surface-100 flex items-center justify-center text-xs font-bold text-surface-500">
+                                {idx + 1}
+                              </div>
+                              <span className="text-sm font-medium text-surface-800">{product.name}</span>
                             </div>
                           </td>
-                          <td className="py-3 px-4 text-right text-sm text-gray-700">{product.sales.toLocaleString()}</td>
-                          <td className="py-3 px-4 text-right text-sm font-medium text-gray-900">{formatCurrency(product.revenue)}</td>
+                          <td className="py-3 px-5 text-right text-sm text-surface-600">{product.sales.toLocaleString()}</td>
+                          <td className="py-3 px-5 text-right text-sm font-semibold text-surface-900">{formatCurrency(product.revenue)}</td>
                         </tr>
                       ))}
                     </tbody>
@@ -452,21 +468,20 @@ function ProductAnalytics() {
 
           {/* Coupon Usage */}
           <motion.div
-            initial={{ opacity: 0, y: 20 }}
+            initial={{ opacity: 0, y: 15 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5 }}
-            className="bg-white rounded-xl shadow-lg p-6 border border-gray-100"
+            transition={{ duration: 0.4, delay: 0.35 }}
+            className="card"
           >
-            <div className="flex justify-between items-center mb-6">
-              <h3 className="text-xl font-semibold text-gray-900">Coupon Usage</h3>
-              <motion.button
-                whileHover={{ scale: 1.05 }}
+            <div className="flex justify-between items-center p-5 border-b border-surface-100">
+              <h3 className="text-base font-semibold text-surface-900">Coupon Usage</h3>
+              <button
                 onClick={() => setIsCouponsExpanded(!isCouponsExpanded)}
-                className="text-blue-600 hover:text-blue-700 text-sm font-medium flex items-center"
+                className="text-xs font-medium text-brand-600 hover:text-brand-700 flex items-center gap-1"
               >
                 {isCouponsExpanded ? 'Collapse' : 'View All'}
-                {isCouponsExpanded ? <ChevronUp size={16} className="ml-1" /> : <ChevronDown size={16} className="ml-1" />}
-              </motion.button>
+                {isCouponsExpanded ? <ChevronUp size={14} /> : <ChevronDown size={14} />}
+              </button>
             </div>
             <AnimatePresence>
               {isCouponsExpanded && (
@@ -474,35 +489,31 @@ function ProductAnalytics() {
                   initial={{ height: 0, opacity: 0 }}
                   animate={{ height: 'auto', opacity: 1 }}
                   exit={{ height: 0, opacity: 0 }}
-                  transition={{ duration: 0.3 }}
-                  className="overflow-x-auto"
+                  transition={{ duration: 0.25 }}
+                  className="overflow-hidden"
                 >
-                  <table className="min-w-full">
+                  <table className="w-full">
                     <thead>
-                      <tr className="border-b border-gray-200">
-                        <th className="text-left py-3 px-4 text-sm font-medium text-gray-500">Code</th>
-                        <th className="text-center py-3 px-4 text-sm font-medium text-gray-500">Discount</th>
-                        <th className="text-right py-3 px-4 text-sm font-medium text-gray-500">Uses</th>
-                        <th className="text-right py-3 px-4 text-sm font-medium text-gray-500">Revenue</th>
+                      <tr className="border-b border-surface-100">
+                        <th className="text-left py-3 px-5 text-xs font-medium text-surface-500 uppercase tracking-wide">Code</th>
+                        <th className="text-center py-3 px-5 text-xs font-medium text-surface-500 uppercase tracking-wide">Discount</th>
+                        <th className="text-right py-3 px-5 text-xs font-medium text-surface-500 uppercase tracking-wide">Uses</th>
+                        <th className="text-right py-3 px-5 text-xs font-medium text-surface-500 uppercase tracking-wide">Revenue</th>
                       </tr>
                     </thead>
                     <tbody>
                       {coupons.map((coupon, index) => (
-                        <tr
-                          key={index}
-                          className="border-b border-gray-100 hover:bg-gray-50 transition-colors duration-200"
-                        >
-                          <td className="py-3 px-4">
-                            <span className="text-sm font-medium text-gray-700">{coupon.code}</span>
+                        <tr key={index} className="border-b border-surface-50 last:border-0 hover:bg-surface-50 transition-colors">
+                          <td className="py-3 px-5">
+                            <span className="text-sm font-mono font-semibold text-surface-800 bg-surface-100 px-2 py-0.5 rounded">{coupon.code}</span>
                           </td>
-                          <td className="py-3 px-4 text-center">
-                            <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-blue-100 text-blue-800">
-                              <Percent size={12} className="mr-1" />
+                          <td className="py-3 px-5 text-center">
+                            <span className="inline-flex items-center px-2 py-0.5 rounded-md text-xs font-medium bg-brand-50 text-brand-700 border border-brand-200">
                               {coupon.discount}
                             </span>
                           </td>
-                          <td className="py-3 px-4 text-right text-sm text-gray-700">{coupon.uses.toLocaleString()}</td>
-                          <td className="py-3 px-4 text-right text-sm font-medium text-gray-900">{formatCurrency(coupon.revenue)}</td>
+                          <td className="py-3 px-5 text-right text-sm text-surface-600">{coupon.uses.toLocaleString()}</td>
+                          <td className="py-3 px-5 text-right text-sm font-semibold text-surface-900">{formatCurrency(coupon.revenue)}</td>
                         </tr>
                       ))}
                     </tbody>
@@ -513,23 +524,22 @@ function ProductAnalytics() {
           </motion.div>
         </div>
 
-        {/* Recent Orders Section */}
+        {/* Recent Orders */}
         <motion.div
-          initial={{ opacity: 0, y: 20 }}
+          initial={{ opacity: 0, y: 15 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5 }}
-          className="bg-white rounded-xl shadow-lg p-6 border border-gray-100 mb-10"
+          transition={{ duration: 0.4, delay: 0.4 }}
+          className="card mb-8"
         >
-          <div className="flex justify-between items-center mb-6">
-            <h3 className="text-xl font-semibold text-gray-900">Recent Orders</h3>
-            <motion.button
-              whileHover={{ scale: 1.05 }}
+          <div className="flex justify-between items-center p-5 border-b border-surface-100">
+            <h3 className="text-base font-semibold text-surface-900">Recent Orders</h3>
+            <button
               onClick={() => setIsRecentOrdersExpanded(!isRecentOrdersExpanded)}
-              className="text-blue-600 hover:text-blue-700 text-sm font-medium flex items-center"
+              className="text-xs font-medium text-brand-600 hover:text-brand-700 flex items-center gap-1"
             >
               {isRecentOrdersExpanded ? 'Collapse' : 'View All Orders'}
-              {isRecentOrdersExpanded ? <ChevronUp size={16} className="ml-1" /> : <ChevronDown size={16} className="ml-1" />}
-            </motion.button>
+              {isRecentOrdersExpanded ? <ChevronUp size={14} /> : <ChevronDown size={14} />}
+            </button>
           </div>
           <AnimatePresence>
             {isRecentOrdersExpanded && (
@@ -537,52 +547,46 @@ function ProductAnalytics() {
                 initial={{ height: 0, opacity: 0 }}
                 animate={{ height: 'auto', opacity: 1 }}
                 exit={{ height: 0, opacity: 0 }}
-                transition={{ duration: 0.3 }}
-                className="overflow-x-auto"
+                transition={{ duration: 0.25 }}
+                className="overflow-hidden"
               >
-                <table className="min-w-full">
+                <table className="w-full">
                   <thead>
-                    <tr className="border-b border-gray-200">
-                      <th className="text-left py-3 px-4 text-sm font-medium text-gray-500">Order ID</th>
-                      <th className="text-left py-3 px-4 text-sm font-medium text-gray-500">Customer</th>
-                      <th className="text-left py-3 px-4 text-sm font-medium text-gray-500">Date</th>
-                      <th className="text-right py-3 px-4 text-sm font-medium text-gray-500">Amount</th>
-                      <th className="text-center py-3 px-4 text-sm font-medium text-gray-500">Status</th>
-                      <th className="text-right py-3 px-4 text-sm font-medium text-gray-500">Actions</th>
+                    <tr className="border-b border-surface-100">
+                      <th className="text-left py-3 px-5 text-xs font-medium text-surface-500 uppercase tracking-wide">Order ID</th>
+                      <th className="text-left py-3 px-5 text-xs font-medium text-surface-500 uppercase tracking-wide">Customer</th>
+                      <th className="text-left py-3 px-5 text-xs font-medium text-surface-500 uppercase tracking-wide">Date</th>
+                      <th className="text-right py-3 px-5 text-xs font-medium text-surface-500 uppercase tracking-wide">Amount</th>
+                      <th className="text-center py-3 px-5 text-xs font-medium text-surface-500 uppercase tracking-wide">Status</th>
+                      <th className="text-right py-3 px-5 text-xs font-medium text-surface-500 uppercase tracking-wide">Actions</th>
                     </tr>
                   </thead>
                   <tbody>
                     {recentOrders.map((order) => (
-                      <tr
-                        key={order.id}
-                        className="border-b border-gray-100 hover:bg-gray-50 transition-colors duration-200"
-                      >
-                        <td className="py-4 px-4">
-                          <span className="text-sm font-medium text-gray-700">{order.id}</span>
+                      <tr key={order.id} className="border-b border-surface-50 last:border-0 hover:bg-surface-50 transition-colors">
+                        <td className="py-3.5 px-5">
+                          <span className="text-sm font-medium text-surface-800">{order.id}</span>
                         </td>
-                        <td className="py-4 px-4">
-                          <span className="text-sm text-gray-700">{order.customer}</span>
+                        <td className="py-3.5 px-5">
+                          <span className="text-sm text-surface-700">{order.customer}</span>
                         </td>
-                        <td className="py-4 px-4">
-                          <span className="text-sm text-gray-500">{order.date}</span>
+                        <td className="py-3.5 px-5">
+                          <span className="text-sm text-surface-500">{order.date}</span>
                         </td>
-                        <td className="py-4 px-4 text-right">
-                          <span className="text-sm font-medium text-gray-900">{formatCurrency(order.amount)}</span>
+                        <td className="py-3.5 px-5 text-right">
+                          <span className="text-sm font-semibold text-surface-900">{formatCurrency(order.amount)}</span>
                         </td>
-                        <td className="py-4 px-4">
+                        <td className="py-3.5 px-5">
                           <div className="flex justify-center">
-                            <span className={`px-2 py-1 rounded-full text-xs font-medium ${getStatusColor(order.status)}`}>
+                            <span className={`px-2.5 py-1 rounded-full text-xs font-medium ${statusColors[order.status] || 'bg-surface-100 text-surface-600'}`}>
                               {order.status}
                             </span>
                           </div>
                         </td>
-                        <td className="py-4 px-4 text-right">
-                          <motion.button
-                            whileHover={{ scale: 1.1 }}
-                            className="text-gray-500 hover:text-gray-700"
-                          >
-                            <Eye size={18} />
-                          </motion.button>
+                        <td className="py-3.5 px-5 text-right">
+                          <button className="p-1.5 text-surface-400 hover:text-surface-600 hover:bg-surface-100 rounded-lg transition-colors">
+                            <Eye size={16} />
+                          </button>
                         </td>
                       </tr>
                     ))}
@@ -593,23 +597,25 @@ function ProductAnalytics() {
           </AnimatePresence>
         </motion.div>
 
-        {/* Digital Marketing Insights Section */}
+        {/* Digital Marketing */}
         <motion.div
-          initial={{ opacity: 0, y: 20 }}
+          initial={{ opacity: 0, y: 15 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5 }}
-          className="bg-white rounded-xl shadow-lg p-6 border border-gray-100 mb-10"
+          transition={{ duration: 0.4, delay: 0.45 }}
+          className="card mb-8"
         >
-          <div className="flex justify-between items-center mb-6">
-            <h3 className="text-xl font-semibold text-gray-900">Digital Marketing Insights</h3>
-            <motion.button
-              whileHover={{ scale: 1.05 }}
+          <div className="flex justify-between items-center p-5 border-b border-surface-100">
+            <div>
+              <h3 className="text-base font-semibold text-surface-900">Digital Marketing Insights</h3>
+              <p className="text-xs text-surface-500 mt-0.5">Campaign performance and ad spend</p>
+            </div>
+            <button
               onClick={() => setIsMarketingExpanded(!isMarketingExpanded)}
-              className="text-blue-600 hover:text-blue-700 text-sm font-medium flex items-center"
+              className="text-xs font-medium text-brand-600 hover:text-brand-700 flex items-center gap-1"
             >
               {isMarketingExpanded ? 'Collapse' : 'View All'}
-              {isMarketingExpanded ? <ChevronUp size={16} className="ml-1" /> : <ChevronDown size={16} className="ml-1" />}
-            </motion.button>
+              {isMarketingExpanded ? <ChevronUp size={14} /> : <ChevronDown size={14} />}
+            </button>
           </div>
           <AnimatePresence>
             {isMarketingExpanded && (
@@ -617,73 +623,59 @@ function ProductAnalytics() {
                 initial={{ height: 0, opacity: 0 }}
                 animate={{ height: 'auto', opacity: 1 }}
                 exit={{ height: 0, opacity: 0 }}
-                transition={{ duration: 0.3 }}
+                transition={{ duration: 0.25 }}
+                className="overflow-hidden"
               >
-                {/* Summary Metrics */}
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+                {/* Marketing Metrics */}
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 p-5 border-b border-surface-100">
                   {[
                     { title: 'Total Ad Spend', value: formatCurrency(digitalMarketingStats.totalAdSpend), icon: DollarSign, color: 'blue' },
                     { title: 'Impressions', value: digitalMarketingStats.impressions.toLocaleString(), icon: Eye, color: 'purple' },
-                    { title: 'Clicks', value: digitalMarketingStats.clicks.toLocaleString(), icon: Circle, color: 'green' },
+                    { title: 'Clicks', value: digitalMarketingStats.clicks.toLocaleString(), icon: Activity, color: 'green' },
                     { title: 'Conversion Rate', value: `${digitalMarketingStats.conversionRate}%`, icon: Percent, color: 'amber' },
                   ].map((stat) => (
-                    <motion.div
-                      key={stat.title}
-                      whileHover={{ scale: 1.02 }}
-                      className="bg-gray-50 rounded-lg p-4 flex items-center"
-                    >
-                      <div className={`bg-${stat.color}-50 p-3 rounded-full mr-4`}>
-                        <stat.icon size={20} className={`text-${stat.color}-600`} />
+                    <div key={stat.title} className="flex items-center gap-3 p-3 rounded-lg bg-surface-50">
+                      <div className={`w-9 h-9 rounded-lg flex items-center justify-center ${cardColors[stat.color]}`}>
+                        <stat.icon size={18} />
                       </div>
                       <div>
-                        <p className="text-sm text-gray-500">{stat.title}</p>
-                        <h4 className="text-lg font-semibold text-gray-900">{stat.value}</h4>
+                        <p className="text-xs text-surface-500">{stat.title}</p>
+                        <h4 className="text-sm font-bold text-surface-900">{stat.value}</h4>
                       </div>
-                    </motion.div>
+                    </div>
                   ))}
                 </div>
 
-                {/* Campaign Details Table */}
+                {/* Campaigns Table */}
                 <div className="overflow-x-auto">
-                  <table className="min-w-full">
+                  <table className="w-full">
                     <thead>
-                      <tr className="border-b border-gray-200">
-                        <th className="text-left py-3 px-4 text-sm font-medium text-gray-500">Campaign</th>
-                        <th className="text-left py-3 px-4 text-sm font-medium text-gray-500">Platform</th>
-                        <th className="text-right py-3 px-4 text-sm font-medium text-gray-500">Spend</th>
-                        <th className="text-right py-3 px-4 text-sm font-medium text-gray-500">Impressions</th>
-                        <th className="text-right py-3 px-4 text-sm font-medium text-gray-500">Clicks</th>
-                        <th className="text-right py-3 px-4 text-sm font-medium text-gray-500">Conversions</th>
-                        <th className="text-center py-3 px-4 text-sm font-medium text-gray-500">Status</th>
+                      <tr className="border-b border-surface-100">
+                        <th className="text-left py-3 px-5 text-xs font-medium text-surface-500 uppercase tracking-wide">Campaign</th>
+                        <th className="text-left py-3 px-5 text-xs font-medium text-surface-500 uppercase tracking-wide">Platform</th>
+                        <th className="text-right py-3 px-5 text-xs font-medium text-surface-500 uppercase tracking-wide">Spend</th>
+                        <th className="text-right py-3 px-5 text-xs font-medium text-surface-500 uppercase tracking-wide">Impressions</th>
+                        <th className="text-right py-3 px-5 text-xs font-medium text-surface-500 uppercase tracking-wide">Clicks</th>
+                        <th className="text-right py-3 px-5 text-xs font-medium text-surface-500 uppercase tracking-wide">Conversions</th>
+                        <th className="text-center py-3 px-5 text-xs font-medium text-surface-500 uppercase tracking-wide">Status</th>
                       </tr>
                     </thead>
                     <tbody>
                       {digitalMarketingStats.campaigns.map((campaign) => (
-                        <tr
-                          key={campaign.id}
-                          className="border-b border-gray-100 hover:bg-gray-50 transition-colors duration-200"
-                        >
-                          <td className="py-3 px-4">
-                            <span className="text-sm font-medium text-gray-700">{campaign.name}</span>
+                        <tr key={campaign.id} className="border-b border-surface-50 last:border-0 hover:bg-surface-50 transition-colors">
+                          <td className="py-3 px-5">
+                            <span className="text-sm font-medium text-surface-800">{campaign.name}</span>
                           </td>
-                          <td className="py-3 px-4">
-                            <span className="text-sm text-gray-700">{campaign.platform}</span>
+                          <td className="py-3 px-5">
+                            <span className="text-sm text-surface-600">{campaign.platform}</span>
                           </td>
-                          <td className="py-3 px-4 text-right">
-                            <span className="text-sm text-gray-700">{formatCurrency(campaign.spend)}</span>
-                          </td>
-                          <td className="py-3 px-4 text-right">
-                            <span className="text-sm text-gray-700">{campaign.impressions.toLocaleString()}</span>
-                          </td>
-                          <td className="py-3 px-4 text-right">
-                            <span className="text-sm text-gray-700">{campaign.clicks.toLocaleString()}</span>
-                          </td>
-                          <td className="py-3 px-4 text-right">
-                            <span className="text-sm text-gray-700">{campaign.conversions.toLocaleString()}</span>
-                          </td>
-                          <td className="py-3 px-4">
+                          <td className="py-3 px-5 text-right text-sm text-surface-700">{formatCurrency(campaign.spend)}</td>
+                          <td className="py-3 px-5 text-right text-sm text-surface-700">{campaign.impressions.toLocaleString()}</td>
+                          <td className="py-3 px-5 text-right text-sm text-surface-700">{campaign.clicks.toLocaleString()}</td>
+                          <td className="py-3 px-5 text-right text-sm text-surface-700">{campaign.conversions.toLocaleString()}</td>
+                          <td className="py-3 px-5">
                             <div className="flex justify-center">
-                              <span className={`px-2 py-1 rounded-full text-xs font-medium ${getStatusColor(campaign.status)}`}>
+                              <span className={`px-2.5 py-1 rounded-full text-xs font-medium ${statusColors[campaign.status] || 'bg-surface-100 text-surface-600'}`}>
                                 {campaign.status}
                               </span>
                             </div>
@@ -698,106 +690,103 @@ function ProductAnalytics() {
           </AnimatePresence>
         </motion.div>
 
-        {/* Maps & Analytics Section */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        {/* Bottom Row - Region, Seasonal, Customer */}
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-5">
           {/* Sales by Region */}
           <motion.div
-            initial={{ opacity: 0, y: 20 }}
+            initial={{ opacity: 0, y: 15 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5 }}
-            className="bg-white rounded-xl shadow-lg p-6 border border-gray-100"
+            transition={{ duration: 0.4, delay: 0.5 }}
+            className="card p-6"
           >
-            <h3 className="text-xl font-semibold text-gray-900 mb-6">Sales by Region</h3>
+            <h3 className="text-base font-semibold text-surface-900 mb-5">Sales by Region</h3>
             <div className="space-y-4">
               {[
-                { region: 'North India', value: 38, color: 'blue' },
-                { region: 'South India', value: 28, color: 'green' },
-                { region: 'East India', value: 22, color: 'amber' },
-                { region: 'West India', value: 12, color: 'purple' },
+                { region: 'North India', value: 38, color: 'bg-brand-500' },
+                { region: 'South India', value: 28, color: 'bg-blue-500' },
+                { region: 'East India', value: 22, color: 'bg-amber-500' },
+                { region: 'West India', value: 12, color: 'bg-purple-500' },
               ].map((region) => (
-                <motion.div
-                  key={region.region}
-                  whileHover={{ scale: 1.02 }}
-                  className="flex items-center justify-between"
-                >
-                  <div className="flex items-center">
-                    <div className={`h-3 w-3 bg-${region.color}-500 rounded-full mr-2`}></div>
-                    <span className="text-sm text-gray-700">{region.region}</span>
+                <div key={region.region}>
+                  <div className="flex items-center justify-between mb-1.5">
+                    <span className="text-sm text-surface-700">{region.region}</span>
+                    <span className="text-sm font-semibold text-surface-900">{region.value}%</span>
                   </div>
-                  <span className="text-sm font-medium text-gray-900">{region.value}%</span>
-                </motion.div>
+                  <div className="w-full h-2 bg-surface-100 rounded-full overflow-hidden">
+                    <motion.div
+                      initial={{ width: 0 }}
+                      animate={{ width: `${region.value}%` }}
+                      transition={{ duration: 0.8, ease: 'easeOut', delay: 0.5 }}
+                      className={`h-full ${region.color} rounded-full`}
+                    />
+                  </div>
+                </div>
               ))}
             </div>
           </motion.div>
 
           {/* Seasonal Trends */}
           <motion.div
-            initial={{ opacity: 0, y: 20 }}
+            initial={{ opacity: 0, y: 15 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5 }}
-            className="bg-white rounded-xl shadow-lg p-6 border border-gray-100"
+            transition={{ duration: 0.4, delay: 0.55 }}
+            className="card p-6"
           >
-            <h3 className="text-xl font-semibold text-gray-900 mb-6">Seasonal Products Performance</h3>
+            <h3 className="text-base font-semibold text-surface-900 mb-5">Seasonal Performance</h3>
             <div className="space-y-4">
               {[
-                { name: "Valentine's Special", value: 85, color: 'pink' },
-                { name: 'Diwali Collection', value: 92, color: 'amber' },
-                { name: 'Easter Specials', value: 78, color: 'purple' },
-                { name: 'Christmas Collection', value: 89, color: 'red' },
+                { name: "Valentine's Special", value: 85, color: 'bg-pink-500' },
+                { name: 'Diwali Collection', value: 92, color: 'bg-amber-500' },
+                { name: 'Easter Specials', value: 78, color: 'bg-purple-500' },
+                { name: 'Christmas Collection', value: 89, color: 'bg-red-500' },
               ].map((trend) => (
                 <div key={trend.name}>
-                  <div className="flex justify-between mb-1">
-                    <span className="text-sm text-gray-700">{trend.name}</span>
-                    <span className="text-sm font-medium text-gray-900">{trend.value}%</span>
+                  <div className="flex justify-between mb-1.5">
+                    <span className="text-sm text-surface-700">{trend.name}</span>
+                    <span className="text-sm font-semibold text-surface-900">{trend.value}%</span>
                   </div>
-                  <motion.div
-                    initial={{ width: 0 }}
-                    animate={{ width: `${trend.value}%` }}
-                    transition={{ duration: 0.8, ease: 'easeOut' }}
-                    className={`h-2 bg-${trend.color}-500 rounded-full`}
-                  ></motion.div>
+                  <div className="w-full h-2 bg-surface-100 rounded-full overflow-hidden">
+                    <motion.div
+                      initial={{ width: 0 }}
+                      animate={{ width: `${trend.value}%` }}
+                      transition={{ duration: 0.8, ease: 'easeOut', delay: 0.6 }}
+                      className={`h-full ${trend.color} rounded-full`}
+                    />
+                  </div>
                 </div>
               ))}
             </div>
           </motion.div>
 
-          {/* Customer Stats */}
+          {/* Customer Insights */}
           <motion.div
-            initial={{ opacity: 0, y: 20 }}
+            initial={{ opacity: 0, y: 15 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5 }}
-            className="bg-white rounded-xl shadow-lg p-6 border border-gray-100"
+            transition={{ duration: 0.4, delay: 0.6 }}
+            className="card p-6"
           >
-            <h3 className="text-xl font-semibold text-gray-900 mb-6">Customer Insights</h3>
-            <div className="space-y-6">
+            <h3 className="text-base font-semibold text-surface-900 mb-5">Customer Insights</h3>
+            <div className="space-y-5">
               {[
-                { label: 'Returning Customers', value: Math.round((customerStats.returningCustomers / customerStats.totalCustomers) * 100), growth: 3.2 },
-                { label: 'New Customers', value: customerStats.newCustomers, growth: customerStats.customerGrowth.toFixed(1) },
-                { label: 'Customer Retention Rate', value: Math.round((customerStats.returningCustomers / customerStats.totalCustomers) * 100), growth: 2.5 },
+                { label: 'Returning Customers', value: Math.round((customerStats.returningCustomers / customerStats.totalCustomers) * 100), suffix: '%', growth: 3.2 },
+                { label: 'New Customers', value: customerStats.newCustomers, suffix: '', growth: customerStats.customerGrowth },
+                { label: 'Retention Rate', value: Math.round((customerStats.returningCustomers / customerStats.totalCustomers) * 100), suffix: '%', growth: 2.5 },
               ].map((stat) => (
-                <motion.div
-                  key={stat.label}
-                  whileHover={{ scale: 1.02 }}
-                >
-                  <p className="text-sm text-gray-500 mb-1">{stat.label}</p>
+                <div key={stat.label}>
+                  <p className="text-xs text-surface-500 mb-1">{stat.label}</p>
                   <div className="flex items-center">
-                    <div className="text-xl font-bold text-gray-900 mr-2">{stat.label.includes('Customers') && !stat.label.includes('New') ? `${stat.value}%` : stat.value.toLocaleString()}</div>
-                    <div className="flex items-center text-sm text-green-600">
-                      <ArrowUpRight size={16} />
+                    <span className="text-xl font-bold text-surface-900">{stat.value}{stat.suffix}</span>
+                    <span className="flex items-center text-xs font-semibold text-emerald-600 ml-2">
+                      <ArrowUpRight size={14} />
                       {stat.growth}%
-                    </div>
+                    </span>
                   </div>
-                </motion.div>
+                </div>
               ))}
-              <motion.div
-                whileHover={{ scale: 1.05 }}
-                className="pt-2"
-              >
-                <button className="w-full flex items-center justify-center text-blue-600 hover:text-blue-700 text-sm font-medium">
-                  View Customer Analytics
-                  <ChevronRight size={16} className="ml-1" />
-                </button>
-              </motion.div>
+              <button className="w-full flex items-center justify-center gap-1.5 text-sm font-medium text-brand-600 hover:text-brand-700 transition-colors pt-2 border-t border-surface-100">
+                View Customer Analytics
+                <ChevronRight size={14} />
+              </button>
             </div>
           </motion.div>
         </div>

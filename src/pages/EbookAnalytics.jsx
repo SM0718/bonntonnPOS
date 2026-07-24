@@ -32,7 +32,6 @@ ChartJS.register(
   Legend
 );
 
-// Sample data for eBook analytics
 const ebookSalesData = {
   daily: [
     { date: '2025-04-21', sales: 65 },
@@ -62,7 +61,7 @@ const ebookSalesData = {
     { year: '2022', sales: 15000 },
     { year: '2023', sales: 18000 },
     { year: '2024', sales: 20000 },
-    { year: '2025', sales: 9500 }, // Partial year
+    { year: '2025', sales: 9500 },
   ],
 };
 
@@ -141,7 +140,6 @@ function EbookAnalytics() {
     );
   };
 
-  // Dynamic chart data based on time range
   const getChartData = () => {
     let labels, data;
     switch (timeRange) {
@@ -168,27 +166,23 @@ function EbookAnalytics() {
     return { labels, data };
   };
 
-  // Sales Chart Data
   const salesChartData = {
     labels: getChartData().labels,
     datasets: [{
       label: 'eBook Sales',
       data: getChartData().data,
-      backgroundColor: 'rgba(59, 130, 246, 0.8)',
-      borderColor: 'rgb(59, 130, 246)',
+      backgroundColor: 'rgba(16, 185, 129, 0.8)',
+      borderColor: 'rgb(16, 185, 129)',
       borderWidth: 2,
       borderRadius: 4,
-      hoverBackgroundColor: 'rgba(59, 130, 246, 1)',
+      hoverBackgroundColor: 'rgba(16, 185, 129, 1)',
     }],
   };
 
   const salesChartOptions = {
     responsive: true,
     maintainAspectRatio: false,
-    animation: {
-      duration: 1000,
-      easing: 'easeOutQuart',
-    },
+    animation: { duration: 1000, easing: 'easeOutQuart' },
     plugins: {
       legend: { display: false },
       tooltip: {
@@ -197,9 +191,7 @@ function EbookAnalytics() {
         cornerRadius: 8,
         titleFont: { size: 14, weight: 'bold' },
         bodyFont: { size: 12 },
-        callbacks: {
-          label: (context) => `Sales: ${context.parsed.y.toLocaleString()}`,
-        },
+        callbacks: { label: (context) => `Sales: ${context.parsed.y.toLocaleString()}` },
       },
       title: {
         display: true,
@@ -214,33 +206,26 @@ function EbookAnalytics() {
       y: { 
         beginAtZero: true, 
         grid: { color: 'rgba(229, 231, 235, 0.3)' },
-        ticks: { 
-          font: { size: 12 },
-          callback: (value) => value.toLocaleString(),
-        },
+        ticks: { font: { size: 12 }, callback: (value) => value.toLocaleString() },
       },
-      x: { 
-        grid: { display: false },
-        ticks: { font: { size: 12 } },
-      },
+      x: { grid: { display: false }, ticks: { font: { size: 12 } } },
     },
   };
 
-  // Revenue Trend Data
   const revenueLineData = {
     labels: getChartData().labels,
     datasets: [
       {
         label: 'Revenue',
         data: getChartData().data.map(sales => sales * ebookStats.averagePrice),
-        borderColor: 'rgb(34, 197, 94)',
-        backgroundColor: 'rgba(34, 197, 94, 0.2)',
+        borderColor: 'rgb(16, 185, 129)',
+        backgroundColor: 'rgba(16, 185, 129, 0.2)',
         fill: true,
         tension: 0.4,
-        pointBackgroundColor: 'rgb(34, 197, 94)',
+        pointBackgroundColor: 'rgb(16, 185, 129)',
         pointBorderColor: '#fff',
         pointHoverBackgroundColor: '#fff',
-        pointHoverBorderColor: 'rgb(34, 197, 94)',
+        pointHoverBorderColor: 'rgb(16, 185, 129)',
       },
     ],
   };
@@ -248,10 +233,7 @@ function EbookAnalytics() {
   const revenueLineOptions = {
     responsive: true,
     maintainAspectRatio: false,
-    animation: {
-      duration: 1000,
-      easing: 'easeOutQuart',
-    },
+    animation: { duration: 1000, easing: 'easeOutQuart' },
     plugins: {
       legend: { display: false },
       tooltip: {
@@ -260,9 +242,7 @@ function EbookAnalytics() {
         cornerRadius: 8,
         titleFont: { size: 14, weight: 'bold' },
         bodyFont: { size: 12 },
-        callbacks: {
-          label: (context) => `Revenue: ${formatCurrency(context.parsed.y)}`,
-        },
+        callbacks: { label: (context) => `Revenue: ${formatCurrency(context.parsed.y)}` },
       },
       title: {
         display: true,
@@ -276,33 +256,26 @@ function EbookAnalytics() {
     scales: {
       y: {
         beginAtZero: true,
-        ticks: { 
-          font: { size: 12 },
-          callback: (value) => `$${(value / 1000).toFixed(0)}K` 
-        },
+        ticks: { font: { size: 12 }, callback: (value) => `$${(value / 1000).toFixed(0)}K` },
         grid: { color: 'rgba(229, 231, 235, 0.3)' },
       },
-      x: { 
-        grid: { display: false },
-        ticks: { font: { size: 12 } },
-      },
+      x: { grid: { display: false }, ticks: { font: { size: 12 } } },
     },
   };
 
-  // Revenue Breakdown Pie Chart
   const revenueBreakdownData = {
     labels: revenueBreakdown.categories.map(item => item.name),
     datasets: [
       {
         data: revenueBreakdown.categories.map(item => item.value),
         backgroundColor: [
-          'rgba(59, 130, 246, 0.8)',
           'rgba(16, 185, 129, 0.8)',
+          'rgba(139, 92, 246, 0.8)',
           'rgba(245, 158, 11, 0.8)',
         ],
         borderColor: [
-          'rgb(59, 130, 246)',
           'rgb(16, 185, 129)',
+          'rgb(139, 92, 246)',
           'rgb(245, 158, 11)',
         ],
         borderWidth: 2,
@@ -314,19 +287,11 @@ function EbookAnalytics() {
   const revenueBreakdownOptions = {
     responsive: true,
     maintainAspectRatio: false,
-    animation: {
-      duration: 1000,
-      easing: 'easeOutQuart',
-    },
+    animation: { duration: 1000, easing: 'easeOutQuart' },
     plugins: {
       legend: { 
         position: 'right', 
-        labels: { 
-          boxWidth: 12, 
-          font: { size: 12 },
-          padding: 15,
-          usePointStyle: true,
-        } 
+        labels: { boxWidth: 12, font: { size: 12 }, padding: 15, usePointStyle: true } 
       },
       tooltip: {
         backgroundColor: 'rgba(31, 41, 55, 0.9)',
@@ -349,7 +314,6 @@ function EbookAnalytics() {
     },
   };
 
-  // Sales by Customer Type Pie Chart
   const customerTypeData = {
     labels: salesByCustomerType.types.map(item => item.name),
     datasets: [
@@ -374,19 +338,11 @@ function EbookAnalytics() {
   const customerTypeOptions = {
     responsive: true,
     maintainAspectRatio: false,
-    animation: {
-      duration: 1000,
-      easing: 'easeOutQuart',
-    },
+    animation: { duration: 1000, easing: 'easeOutQuart' },
     plugins: {
       legend: { 
         position: 'right', 
-        labels: { 
-          boxWidth: 12, 
-          font: { size: 12 },
-          padding: 15,
-          usePointStyle: true,
-        } 
+        labels: { boxWidth: 12, font: { size: 12 }, padding: 15, usePointStyle: true } 
       },
       tooltip: {
         backgroundColor: 'rgba(31, 41, 55, 0.9)',
@@ -409,195 +365,187 @@ function EbookAnalytics() {
     },
   };
 
+  const toggleButtonClass = (isActive) =>
+    `px-3 py-1 text-xs font-medium rounded-full transition-colors duration-200 ${
+      isActive ? 'bg-brand-600 text-white' : 'bg-surface-100 text-surface-600 hover:bg-surface-200'
+    }`;
+
   return (
-    <div className="bg-slate-50 min-h-screen w-full">
-      {/* Header */}
-      <div className="bg-white shadow-sm">
-        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-6">
-          <div className="flex flex-col md:flex-row justify-between items-start md:items-center">
-            <div>
-              <h1 className="text-2xl font-bold tracking-tight text-gray-900">eBook Analytics Dashboard</h1>
-              <p className="mt-1 text-sm text-gray-500">Key metrics and performance for eBook sales</p>
-            </div>
-            <div className="mt-4 md:mt-0 flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-3">
-              <div className="relative">
-                <button 
-                  onClick={() => setFilterPanelOpen(!filterPanelOpen)}
-                  className="inline-flex items-center px-4 py-2 border border-gray-200 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors duration-200"
-                >
-                  <Filter className="h-4 w-4 mr-2" />
-                  Filters
-                  {filterPanelOpen ? <ChevronUp className="ml-1 h-4 w-4" /> : <ChevronDown className="ml-1 h-4 w-4" />}
-                </button>
-                <AnimatePresence>
-                  {filterPanelOpen && (
-                    <motion.div
-                      initial={{ opacity: 0, y: -10 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      exit={{ opacity: 0, y: -10 }}
-                      className="absolute right-0 mt-2 w-64 rounded-lg shadow-xl bg-white ring-1 ring-black ring-opacity-5 z-10 p-4"
-                    >
-                      <div className="space-y-2">
-                        <div className="text-xs font-semibold text-gray-500">Categories</div>
-                        {['Technical', 'Business', 'Self-Help'].map(category => (
-                          <label key={category} className="flex items-center space-x-2 text-sm text-gray-700">
-                            <input
-                              type="checkbox"
-                              checked={selectedCategories.includes(category)}
-                              onChange={() => handleCategoryChange(category)}
-                              className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
-                            />
-                            <span>{category}</span>
-                          </label>
-                        ))}
-                      </div>
-                    </motion.div>
-                  )}
-                </AnimatePresence>
-              </div>
-              <button
-                onClick={handleDownload}
-                className="inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors duration-200"
+    <div className="p-8">
+      <div className="max-w-7xl mx-auto">
+        <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8">
+          <div>
+            <h1 className="page-title">eBook Analytics</h1>
+            <p className="mt-1 text-sm text-surface-500">Key metrics and performance for eBook sales</p>
+          </div>
+          <div className="mt-4 md:mt-0 flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-3">
+            <div className="relative">
+              <button 
+                onClick={() => setFilterPanelOpen(!filterPanelOpen)}
+                className="btn-secondary inline-flex items-center px-4 py-2 text-sm font-medium rounded-md"
               >
-                <Download className="h-4 w-4 mr-2" />
-                Export Report
+                <Filter className="h-4 w-4 mr-2" />
+                Filters
+                {filterPanelOpen ? <ChevronUp className="ml-1 h-4 w-4" /> : <ChevronDown className="ml-1 h-4 w-4" />}
               </button>
+              <AnimatePresence>
+                {filterPanelOpen && (
+                  <motion.div
+                    initial={{ opacity: 0, y: -10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: -10 }}
+                    className="absolute right-0 mt-2 w-64 rounded-lg shadow-xl bg-white ring-1 ring-black ring-opacity-5 z-10 p-4"
+                  >
+                    <div className="space-y-2">
+                      <div className="text-xs font-semibold text-surface-500">Categories</div>
+                      {['Technical', 'Business', 'Self-Help'].map(category => (
+                        <label key={category} className="flex items-center space-x-2 text-sm text-surface-700">
+                          <input
+                            type="checkbox"
+                            checked={selectedCategories.includes(category)}
+                            onChange={() => handleCategoryChange(category)}
+                            className="h-4 w-4 text-brand-600 focus:ring-brand-500 border-surface-300 rounded"
+                          />
+                          <span>{category}</span>
+                        </label>
+                      ))}
+                    </div>
+                  </motion.div>
+                )}
+              </AnimatePresence>
             </div>
+            <button
+              onClick={handleDownload}
+              className="btn-primary inline-flex items-center px-4 py-2 text-sm font-medium rounded-md"
+            >
+              <Download className="h-4 w-4 mr-2" />
+              Export Report
+            </button>
           </div>
         </div>
-      </div>
 
-      {/* Content */}
-      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-8">
-        {/* KPI Cards */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
           <motion.div 
-            className="bg-gradient-to-br from-white to-gray-50 rounded-xl shadow-sm p-6 hover:shadow-md transition-shadow duration-300"
-            whileHover={{ scale: 1.02 }}
+            className="card card-hover border border-surface-200 rounded-xl shadow-card p-6"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.3 }}
           >
             <div className="flex items-center">
-              <div className="inline-flex items-center justify-center p-3 bg-blue-100 rounded-md">
-                <BookOpen className="h-6 w-6 text-blue-600" />
+              <div className="inline-flex items-center justify-center p-3 bg-emerald-50 rounded-md">
+                <BookOpen className="h-6 w-6 text-emerald-600" />
               </div>
               <div className="ml-4">
-                <h2 className="text-sm font-medium text-gray-500">Total eBooks</h2>
+                <h2 className="text-sm font-medium text-surface-500">Total eBooks</h2>
                 <div className="flex items-baseline">
-                  <p className="text-2xl font-semibold text-gray-900">{ebookStats.totalEbooks}</p>
-                  <p className="ml-2 flex items-baseline text-sm font-semibold text-green-600">
-                    <TrendingUp className="self-center flex-shrink-0 h-4 w-4 text-green-500" />
+                  <p className="text-2xl font-semibold text-surface-900">{ebookStats.totalEbooks}</p>
+                  <p className="ml-2 flex items-baseline text-sm font-semibold text-emerald-600">
+                    <TrendingUp className="self-center flex-shrink-0 h-4 w-4" />
                     <span>{ebookStats.salesGrowth}%</span>
                   </p>
                 </div>
               </div>
             </div>
-            <div className="mt-4">
+            <div className="mt-4 space-y-1">
               <div className="flex justify-between items-center text-sm">
-                <span className="text-gray-500">Active eBooks</span>
-                <span className="font-medium text-gray-900">{ebookStats.activeEbooks}</span>
+                <span className="text-surface-500">Active eBooks</span>
+                <span className="font-medium text-surface-900">{ebookStats.activeEbooks}</span>
               </div>
-              <div className="flex justify-between items-center text-sm mt-1">
-                <span className="text-gray-500">New eBooks</span>
-                <span className="font-medium text-gray-900">{ebookStats.newEbooks}</span>
+              <div className="flex justify-between items-center text-sm">
+                <span className="text-surface-500">New eBooks</span>
+                <span className="font-medium text-surface-900">{ebookStats.newEbooks}</span>
               </div>
             </div>
           </motion.div>
 
           <motion.div 
-            className="bg-gradient-to-br from-white to-gray-50 rounded-xl shadow-sm p-6 hover:shadow-md transition-shadow duration-300"
-            whileHover={{ scale: 1.02 }}
+            className="card card-hover border border-surface-200 rounded-xl shadow-card p-6"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.3, delay: 0.1 }}
           >
             <div className="flex items-center">
-              <div className="inline-flex items-center justify-center p-3 bg-green-100 rounded-md">
-                <DollarSign className="h-6 w-6 text-green-600" />
+              <div className="inline-flex items-center justify-center p-3 bg-emerald-50 rounded-md">
+                <DollarSign className="h-6 w-6 text-emerald-600" />
               </div>
               <div className="ml-4">
-                <h2 className="text-sm font-medium text-gray-500">Total Revenue</h2>
-                <p className="text-2xl font-semibold text-gray-900">{formatCurrency(ebookStats.totalRevenue)}</p>
+                <h2 className="text-sm font-medium text-surface-500">Total Revenue</h2>
+                <p className="text-2xl font-semibold text-surface-900">{formatCurrency(ebookStats.totalRevenue)}</p>
               </div>
             </div>
-            <div className="mt-4">
+            <div className="mt-4 space-y-1">
               <div className="flex justify-between items-center text-sm">
-                <span className="text-gray-500">Monthly Revenue</span>
-                <span className="font-medium text-gray-900">{formatCurrency(ebookStats.monthlyRevenue)}</span>
+                <span className="text-surface-500">Monthly Revenue</span>
+                <span className="font-medium text-surface-900">{formatCurrency(ebookStats.monthlyRevenue)}</span>
               </div>
-              <div className="flex justify-between items-center text-sm mt-1">
-                <span className="text-gray-500">Avg. Price</span>
-                <span className="font-medium text-gray-900">${ebookStats.averagePrice.toFixed(2)}</span>
+              <div className="flex justify-between items-center text-sm">
+                <span className="text-surface-500">Avg. Price</span>
+                <span className="font-medium text-surface-900">${ebookStats.averagePrice.toFixed(2)}</span>
               </div>
             </div>
           </motion.div>
 
           <motion.div 
-            className="bg-gradient-to-br from-white to-gray-50 rounded-xl shadow-sm p-6 hover:shadow-md transition-shadow duration-300"
-            whileHover={{ scale: 1.02 }}
+            className="card card-hover border border-surface-200 rounded-xl shadow-card p-6"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.3, delay: 0.2 }}
           >
             <div className="flex items-center">
-              <div className="inline-flex items-center justify-center p-3 bg-purple-100 rounded-md">
+              <div className="inline-flex items-center justify-center p-3 bg-purple-50 rounded-md">
                 <ShoppingCart className="h-6 w-6 text-purple-600" />
               </div>
               <div className="ml-4">
-                <h2 className="text-sm font-medium text-gray-500">Conversion Rate</h2>
-                <p className="text-2xl font-semibold text-gray-900">{ebookStats.conversionRate}%</p>
+                <h2 className="text-sm font-medium text-surface-500">Conversion Rate</h2>
+                <p className="text-2xl font-semibold text-surface-900">{ebookStats.conversionRate}%</p>
               </div>
             </div>
-            <div className="mt-4">
+            <div className="mt-4 space-y-1">
               <div className="flex justify-between items-center text-sm">
-                <span className="text-gray-500">Total Sales</span>
-                <span className="font-medium text-gray-900">{ebookSalesData.monthly.reduce((sum, item) => sum + item.sales, 0).toLocaleString()}</span>
+                <span className="text-surface-500">Total Sales</span>
+                <span className="font-medium text-surface-900">{ebookSalesData.monthly.reduce((sum, item) => sum + item.sales, 0).toLocaleString()}</span>
               </div>
             </div>
           </motion.div>
 
           <motion.div 
-            className="bg-gradient-to-br from-white to-gray-50 rounded-xl shadow-sm p-6 hover:shadow-md transition-shadow duration-300"
-            whileHover={{ scale: 1.02 }}
+            className="card card-hover border border-surface-200 rounded-xl shadow-card p-6"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.3, delay: 0.3 }}
           >
             <div className="flex items-center">
-              <div className="inline-flex items-center justify-center p-3 bg-orange-100 rounded-md">
-                <Tag className="h-6 w-6 text-orange-600" />
+              <div className="inline-flex items-center justify-center p-3 bg-amber-50 rounded-md">
+                <Tag className="h-6 w-6 text-amber-600" />
               </div>
               <div className="ml-4">
-                <h2 className="text-sm font-medium text-gray-500">Customer Acquisition Cost</h2>
-                <p className="text-2xl font-semibold text-gray-900">${ebookStats.cac.toFixed(2)}</p>
+                <h2 className="text-sm font-medium text-surface-500">Customer Acquisition Cost</h2>
+                <p className="text-2xl font-semibold text-surface-900">${ebookStats.cac.toFixed(2)}</p>
               </div>
             </div>
-            <div className="mt-4">
+            <div className="mt-4 space-y-1">
               <div className="flex justify-between items-center text-sm">
-                <span className="text-gray-500">Downloads per eBook</span>
-                <span className="font-medium text-gray-900">{ebookStats.downloadsPerEbook.toLocaleString()}</span>
+                <span className="text-surface-500">Downloads per eBook</span>
+                <span className="font-medium text-surface-900">{ebookStats.downloadsPerEbook.toLocaleString()}</span>
               </div>
             </div>
           </motion.div>
         </div>
 
-        {/* Charts */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
           <motion.div 
-            className="bg-white rounded-xl shadow-sm p-6"
+            className="card border border-surface-200 rounded-xl shadow-card p-6"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.3 }}
           >
             <div className="flex justify-end items-center mb-4">
-              {/* <h2 className="text-lg font-semibold text-gray-900">eBook Sales</h2> */}
               <div className="flex space-x-2">
                 {['daily', 'monthly', 'quarterly', 'yearly'].map(range => (
                   <button 
                     key={range}
                     onClick={() => setTimeRange(range)}
-                    className={`px-3 py-1 text-xs font-medium rounded-full ${timeRange === range ? 'bg-blue-600 text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'} transition-colors duration-200`}
+                    className={toggleButtonClass(timeRange === range)}
                   >
                     {range.charAt(0).toUpperCase() + range.slice(1)}
                   </button>
@@ -610,53 +558,48 @@ function EbookAnalytics() {
           </motion.div>
 
           <motion.div 
-            className="bg-white rounded-xl shadow-sm p-6"
+            className="card border border-surface-200 rounded-xl shadow-card p-6"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.3, delay: 0.1 }}
           >
-            {/* <h2 className="text-lg font-semibold text-gray-900 mb-4">Revenue Trend</h2> */}
             <div className="h-80">
               <Line data={revenueLineData} options={revenueLineOptions} />
             </div>
           </motion.div>
         </div>
 
-        {/* Pie Charts Section */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
           <motion.div 
-            className="bg-white rounded-xl shadow-sm p-6"
+            className="card border border-surface-200 rounded-xl shadow-card p-6"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.3 }}
           >
-            {/* <h2 className="text-lg font-semibold text-gray-900 mb-4">Revenue by Category</h2> */}
             <div className="h-80">
               <Pie data={revenueBreakdownData} options={revenueBreakdownOptions} />
             </div>
           </motion.div>
 
           <motion.div 
-            className="bg-white rounded-xl shadow-sm p-6"
+            className="card border border-surface-200 rounded-xl shadow-card p-6"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.3, delay: 0.1 }}
           >
-            {/* <h2 className="text-lg font-semibold text-gray-900 mb-4">Sales by Customer Type</h2> */}
             <div className="h-80">
               <Pie data={customerTypeData} options={customerTypeOptions} />
             </div>
           </motion.div>
         </div>
 
-        {/* Top eBooks */}
-        <div className="bg-white rounded-xl shadow-sm mb-8">
+        <div className="card border border-surface-200 rounded-xl shadow-card mb-8">
           <div className="p-6">
             <div className="flex justify-between items-center mb-4">
-              <h2 className="text-lg font-semibold text-gray-900">Top Performing eBooks</h2>
+              <h2 className="text-lg font-semibold text-surface-900">Top Performing eBooks</h2>
               <button
                 onClick={() => setIsTopEbooksExpanded(!isTopEbooksExpanded)}
-                className="text-gray-500 hover:text-gray-700 transition-colors duration-200"
+                className="text-brand-600 hover:text-brand-700 transition-colors duration-200"
               >
                 {isTopEbooksExpanded ? <ChevronUp className="h-5 w-5" /> : <ChevronDown className="h-5 w-5" />}
               </button>
@@ -668,73 +611,71 @@ function EbookAnalytics() {
                 exit={{ opacity: 0, height: 0 }}
                 transition={{ duration: 0.3 }}
               >
-                <div className="overflow-x-auto -mx-4 sm:-mx-6 lg:-mx-8">
-                  <div className="inline-block min-w-full py-2 align-middle px-4 sm:px-6 lg:px-8">
-                    <table className="min-w-full divide-y divide-gray-200">
-                      <thead>
-                        <tr>
-                          <th scope="col" className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">Title</th>
-                          <th scope="col" className="px-3 py-3.5 text-right text-sm font-semibold text-gray-900">Sales</th>
-                          <th scope="col" className="px-3 py-3.5 text-right text-sm font-semibold text-gray-900">Revenue</th>
-                          <th scope="col" className="px-3 py-3.5 text-right text-sm font-semibold text-gray-900">Downloads</th>
-                          <th scope="col" className="px-3 py-3.5 text-right text-sm font-semibold text-gray-900">Rating</th>
+                <div className="overflow-x-auto">
+                  <table className="min-w-full divide-y divide-surface-200">
+                    <thead>
+                      <tr>
+                        <th className="bg-surface-50 px-3 py-3.5 text-left text-xs font-semibold text-surface-500 uppercase tracking-wide">Title</th>
+                        <th className="bg-surface-50 px-3 py-3.5 text-right text-xs font-semibold text-surface-500 uppercase tracking-wide">Sales</th>
+                        <th className="bg-surface-50 px-3 py-3.5 text-right text-xs font-semibold text-surface-500 uppercase tracking-wide">Revenue</th>
+                        <th className="bg-surface-50 px-3 py-3.5 text-right text-xs font-semibold text-surface-500 uppercase tracking-wide">Downloads</th>
+                        <th className="bg-surface-50 px-3 py-3.5 text-right text-xs font-semibold text-surface-500 uppercase tracking-wide">Rating</th>
+                      </tr>
+                    </thead>
+                    <tbody className="divide-y divide-surface-100">
+                      {topEbooks.map((ebook) => (
+                        <tr key={ebook.id} className="hover:bg-surface-50 transition-colors duration-150">
+                          <td className="whitespace-nowrap px-3 py-4 text-sm font-medium text-surface-900">{ebook.title}</td>
+                          <td className="whitespace-nowrap px-3 py-4 text-sm text-right text-surface-700">{ebook.sales.toLocaleString()}</td>
+                          <td className="whitespace-nowrap px-3 py-4 text-sm text-right text-surface-700">{formatCurrency(ebook.revenue)}</td>
+                          <td className="whitespace-nowrap px-3 py-4 text-sm text-right text-surface-700">{ebook.downloads.toLocaleString()}</td>
+                          <td className="whitespace-nowrap px-3 py-4 text-sm text-right text-surface-700">
+                            <div className="flex items-center justify-end">
+                              {ebook.rating}
+                              <Star className="h-4 w-4 text-amber-400 ml-1" />
+                            </div>
+                          </td>
                         </tr>
-                      </thead>
-                      <tbody className="divide-y divide-gray-200">
-                        {topEbooks.map((ebook) => (
-                          <tr key={ebook.id} className="hover:bg-gray-50 transition-colors duration-150">
-                            <td className="whitespace-nowrap px-3 py-4 text-sm font-medium text-gray-900">{ebook.title}</td>
-                            <td className="whitespace-nowrap px-3 py-4 text-sm text-right text-gray-700">{ebook.sales.toLocaleString()}</td>
-                            <td className="whitespace-nowrap px-3 py-4 text-sm text-right text-gray-700">{formatCurrency(ebook.revenue)}</td>
-                            <td className="whitespace-nowrap px-3 py-4 text-sm text-right text-gray-700">{ebook.downloads.toLocaleString()}</td>
-                            <td className="whitespace-nowrap px-3 py-4 text-sm text-right text-gray-700">
-                              <div className="flex items-center justify-end">
-                                {ebook.rating}
-                                <Star className="h-4 w-4 text-yellow-400 ml-1" />
-                              </div>
-                            </td>
-                          </tr>
-                        ))}
-                      </tbody>
-                    </table>
-                  </div>
+                      ))}
+                    </tbody>
+                  </table>
                 </div>
-                <div className="mt-6 bg-gray-50 rounded-lg p-4">
-                  <h3 className="text-sm font-medium text-gray-700 mb-4">Performance Summary</h3>
+                <div className="mt-6 bg-surface-50 rounded-lg p-4">
+                  <h3 className="text-sm font-medium text-surface-700 mb-4">Performance Summary</h3>
                   <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-                    <div className="bg-white p-4 rounded-lg shadow-sm">
+                    <div className="bg-white p-4 rounded-lg shadow-sm border border-surface-100">
                       <div className="flex items-center">
-                        <Eye className="h-5 w-5 text-blue-600 mr-2" />
+                        <Eye className="h-5 w-5 text-emerald-600 mr-2" />
                         <div>
-                          <p className="text-sm text-gray-600">Total Sales</p>
-                          <p className="text-lg font-semibold text-gray-900">{topEbooks.reduce((sum, ebook) => sum + ebook.sales, 0).toLocaleString()}</p>
+                          <p className="text-sm text-surface-600">Total Sales</p>
+                          <p className="text-lg font-semibold text-surface-900">{topEbooks.reduce((sum, ebook) => sum + ebook.sales, 0).toLocaleString()}</p>
                         </div>
                       </div>
                     </div>
-                    <div className="bg-white p-4 rounded-lg shadow-sm">
+                    <div className="bg-white p-4 rounded-lg shadow-sm border border-surface-100">
                       <div className="flex items-center">
-                        <DollarSign className="h-5 w-5 text-green-600 mr-2" />
+                        <DollarSign className="h-5 w-5 text-emerald-600 mr-2" />
                         <div>
-                          <p className="text-sm text-gray-600">Total Revenue</p>
-                          <p className="text-lg font-semibold text-gray-900">{formatCurrency(topEbooks.reduce((sum, ebook) => sum + ebook.revenue, 0))}</p>
+                          <p className="text-sm text-surface-600">Total Revenue</p>
+                          <p className="text-lg font-semibold text-surface-900">{formatCurrency(topEbooks.reduce((sum, ebook) => sum + ebook.revenue, 0))}</p>
                         </div>
                       </div>
                     </div>
-                    <div className="bg-white p-4 rounded-lg shadow-sm">
+                    <div className="bg-white p-4 rounded-lg shadow-sm border border-surface-100">
                       <div className="flex items-center">
-                        <DownloadCloud className="h-5 w-5 text-orange-600 mr-2" />
+                        <DownloadCloud className="h-5 w-5 text-amber-600 mr-2" />
                         <div>
-                          <p className="text-sm text-gray-600">Total Downloads</p>
-                          <p className="text-lg font-semibold text-gray-900">{topEbooks.reduce((sum, ebook) => sum + ebook.downloads, 0).toLocaleString()}</p>
+                          <p className="text-sm text-surface-600">Total Downloads</p>
+                          <p className="text-lg font-semibold text-surface-900">{topEbooks.reduce((sum, ebook) => sum + ebook.downloads, 0).toLocaleString()}</p>
                         </div>
                       </div>
                     </div>
-                    <div className="bg-white p-4 rounded-lg shadow-sm">
+                    <div className="bg-white p-4 rounded-lg shadow-sm border border-surface-100">
                       <div className="flex items-center">
-                        <Star className="h-5 w-5 text-yellow-400 mr-2" />
+                        <Star className="h-5 w-5 text-amber-400 mr-2" />
                         <div>
-                          <p className="text-sm text-gray-600">Average Rating</p>
-                          <p className="text-lg font-semibold text-gray-900">{(topEbooks.reduce((sum, ebook) => sum + ebook.rating, 0) / topEbooks.length).toFixed(1)}</p>
+                          <p className="text-sm text-surface-600">Average Rating</p>
+                          <p className="text-lg font-semibold text-surface-900">{(topEbooks.reduce((sum, ebook) => sum + ebook.rating, 0) / topEbooks.length).toFixed(1)}</p>
                         </div>
                       </div>
                     </div>

@@ -13,7 +13,6 @@ import {
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
-// Sample data
 const coursesData = [
   { id: 1, title: "Python Mastery", instructor: "John Doe", enrollments: 1200, revenue: 35950, status: "Active" },
   { id: 2, title: "Web Development", instructor: "Jane Smith", enrollments: 850, revenue: 25500, status: "Inactive" },
@@ -64,7 +63,7 @@ function ContentManagement() {
   const [searchQuery, setSearchQuery] = useState('');
   const [sortConfig, setSortConfig] = useState({ key: null, direction: 'asc' });
   const [filterStatus, setFilterStatus] = useState('All');
-  const [filterCategory, setFilterCategory] = useState('All'); // For eBooks
+  const [filterCategory, setFilterCategory] = useState('All');
   const [currentPage, setCurrentPage] = useState(1);
   const [menuOpen, setMenuOpen] = useState(null);
   const itemsPerPage = 10;
@@ -95,7 +94,6 @@ function ContentManagement() {
   const filterData = (data) => {
     let filtered = data;
 
-    // Search
     if (searchQuery) {
       filtered = filtered.filter(item => 
         Object.values(item).some(value => 
@@ -104,17 +102,14 @@ function ContentManagement() {
       );
     }
 
-    // Status Filter
     if (filterStatus !== 'All') {
       filtered = filtered.filter(item => item.status === filterStatus);
     }
 
-    // Category Filter (for eBooks)
     if (activeTab === 'ebooks' && filterCategory !== 'All') {
       filtered = filtered.filter(item => item.category === filterCategory);
     }
 
-    // Sort
     if (sortConfig.key) {
       filtered = sortData(filtered, sortConfig.key, sortConfig.direction);
     }
@@ -162,7 +157,7 @@ function ContentManagement() {
           {headers.map((header, index) => (
             <th 
               key={index} 
-              className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900 cursor-pointer hover:bg-gray-50"
+              className="bg-surface-50 px-3 py-3.5 text-left text-xs font-semibold text-surface-500 uppercase tracking-wide cursor-pointer hover:bg-surface-100 transition-colors"
               onClick={() => handleSort(header.toLowerCase())}
             >
               <div className="flex items-center">
@@ -173,7 +168,7 @@ function ContentManagement() {
               </div>
             </th>
           ))}
-          <th className="px-3 py-3.5 text-right text-sm font-semibold text-gray-900">Actions</th>
+          <th className="bg-surface-50 px-3 py-3.5 text-right text-xs font-semibold text-surface-500 uppercase tracking-wide">Actions</th>
         </tr>
       </thead>
     );
@@ -181,17 +176,21 @@ function ContentManagement() {
 
   const renderTableBody = () => {
     return (
-      <tbody className="divide-y divide-gray-200">
+      <tbody className="divide-y divide-surface-100">
         {paginatedData.map((item) => (
-          <tr key={item.id} className="hover:bg-gray-50 transition-colors duration-150">
+          <tr key={item.id} className="hover:bg-surface-50 transition-colors duration-150">
             {activeTab === 'courses' && (
               <>
-                <td className="whitespace-nowrap px-3 py-4 text-sm font-medium text-gray-900">{item.title}</td>
-                <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-700">{item.instructor}</td>
-                <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-700">{item.enrollments.toLocaleString()}</td>
-                <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-700">{formatCurrency(item.revenue)}</td>
-                <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-700">
-                  <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium ${item.status === 'Active' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}`}>
+                <td className="whitespace-nowrap px-3 py-4 text-sm font-medium text-surface-900">{item.title}</td>
+                <td className="whitespace-nowrap px-3 py-4 text-sm text-surface-700">{item.instructor}</td>
+                <td className="whitespace-nowrap px-3 py-4 text-sm text-surface-700">{item.enrollments.toLocaleString()}</td>
+                <td className="whitespace-nowrap px-3 py-4 text-sm text-surface-700">{formatCurrency(item.revenue)}</td>
+                <td className="whitespace-nowrap px-3 py-4 text-sm text-surface-700">
+                  <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium border ${
+                    item.status === 'Active' 
+                      ? 'bg-emerald-50 text-emerald-700 border-emerald-200' 
+                      : 'bg-red-50 text-red-700 border-red-200'
+                  }`}>
                     {item.status}
                   </span>
                 </td>
@@ -199,12 +198,16 @@ function ContentManagement() {
             )}
             {activeTab === 'ebooks' && (
               <>
-                <td className="whitespace-nowrap px-3 py-4 text-sm font-medium text-gray-900">{item.title}</td>
-                <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-700">{item.category}</td>
-                <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-700">{item.sales.toLocaleString()}</td>
-                <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-700">{formatCurrency(item.revenue)}</td>
-                <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-700">
-                  <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium ${item.status === 'Active' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}`}>
+                <td className="whitespace-nowrap px-3 py-4 text-sm font-medium text-surface-900">{item.title}</td>
+                <td className="whitespace-nowrap px-3 py-4 text-sm text-surface-700">{item.category}</td>
+                <td className="whitespace-nowrap px-3 py-4 text-sm text-surface-700">{item.sales.toLocaleString()}</td>
+                <td className="whitespace-nowrap px-3 py-4 text-sm text-surface-700">{formatCurrency(item.revenue)}</td>
+                <td className="whitespace-nowrap px-3 py-4 text-sm text-surface-700">
+                  <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium border ${
+                    item.status === 'Active' 
+                      ? 'bg-emerald-50 text-emerald-700 border-emerald-200' 
+                      : 'bg-red-50 text-red-700 border-red-200'
+                  }`}>
                     {item.status}
                   </span>
                 </td>
@@ -212,12 +215,16 @@ function ContentManagement() {
             )}
             {activeTab === 'coupons' && (
               <>
-                <td className="whitespace-nowrap px-3 py-4 text-sm font-medium text-gray-900">{item.code}</td>
-                <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-700">{item.discount}</td>
-                <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-700">{item.uses.toLocaleString()}</td>
-                <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-700">{item.expiry}</td>
-                <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-700">
-                  <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium ${item.status === 'Active' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}`}>
+                <td className="whitespace-nowrap px-3 py-4 text-sm font-medium text-surface-900">{item.code}</td>
+                <td className="whitespace-nowrap px-3 py-4 text-sm text-surface-700">{item.discount}</td>
+                <td className="whitespace-nowrap px-3 py-4 text-sm text-surface-700">{item.uses.toLocaleString()}</td>
+                <td className="whitespace-nowrap px-3 py-4 text-sm text-surface-700">{item.expiry}</td>
+                <td className="whitespace-nowrap px-3 py-4 text-sm text-surface-700">
+                  <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium border ${
+                    item.status === 'Active' 
+                      ? 'bg-emerald-50 text-emerald-700 border-emerald-200' 
+                      : 'bg-red-50 text-red-700 border-red-200'
+                  }`}>
                     {item.status}
                   </span>
                 </td>
@@ -226,7 +233,7 @@ function ContentManagement() {
             <td className="whitespace-nowrap px-3 py-4 text-sm text-right relative">
               <button
                 onClick={() => setMenuOpen(menuOpen === item.id ? null : item.id)}
-                className="text-gray-500 hover:text-gray-700"
+                className="text-surface-400 hover:text-surface-600 transition-colors"
               >
                 <MoreVertical className="h-5 w-5" />
               </button>
@@ -241,19 +248,19 @@ function ContentManagement() {
                     <div className="py-1">
                       <button
                         onClick={() => handleAction('Edit', item)}
-                        className="flex items-center w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                        className="flex items-center w-full px-4 py-2 text-sm text-surface-700 hover:bg-surface-50 transition-colors"
                       >
                         <Edit className="h-4 w-4 mr-2" /> Edit
                       </button>
                       <button
                         onClick={() => handleAction('Delete', item)}
-                        className="flex items-center w-full px-4 py-2 text-sm text-red-600 hover:bg-gray-100"
+                        className="flex items-center w-full px-4 py-2 text-sm text-red-600 hover:bg-surface-50 transition-colors"
                       >
                         <Trash2 className="h-4 w-4 mr-2" /> Delete
                       </button>
                       <button
                         onClick={() => handleAction('View', item)}
-                        className="flex items-center w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                        className="flex items-center w-full px-4 py-2 text-sm text-surface-700 hover:bg-surface-50 transition-colors"
                       >
                         <Eye className="h-4 w-4 mr-2" /> View Details
                       </button>
@@ -269,19 +276,14 @@ function ContentManagement() {
   };
 
   return (
-    <div className="bg-slate-50 min-h-screen w-full">
-      {/* Header */}
-      <div className="bg-white shadow-sm">
-        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-6">
-          <h1 className="text-2xl font-bold tracking-tight text-gray-900">Content Management</h1>
-          <p className="mt-1 text-sm text-gray-500">Manage courses, eBooks, and coupon codes</p>
+    <div className="p-8">
+      <div className="max-w-7xl mx-auto">
+        <div className="mb-8">
+          <h1 className="page-title">Content Management</h1>
+          <p className="mt-1 text-sm text-surface-500">Manage courses, eBooks, and coupon codes</p>
         </div>
-      </div>
 
-      {/* Content */}
-      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-8">
-        {/* Tabs */}
-        <div className="border-b border-gray-200">
+        <div className="border-b border-surface-200 mb-6">
           <nav className="-mb-px flex space-x-8">
             {['courses', 'ebooks', 'coupons'].map((tab) => (
               <button
@@ -296,9 +298,9 @@ function ContentManagement() {
                 }}
                 className={`${
                   activeTab === tab
-                    ? 'border-blue-500 text-blue-600'
-                    : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
-                } whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm capitalize`}
+                    ? 'border-b-2 border-brand-600 text-brand-700'
+                    : 'border-b-2 border-transparent text-surface-500 hover:text-surface-700 hover:border-surface-300'
+                } whitespace-nowrap py-4 px-1 font-medium text-sm capitalize transition-colors duration-200`}
               >
                 {tab}
               </button>
@@ -306,11 +308,10 @@ function ContentManagement() {
           </nav>
         </div>
 
-        {/* Controls */}
-        <div className="mt-6 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
           <div className="flex-1">
             <div className="relative">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-surface-400" />
               <input
                 type="text"
                 value={searchQuery}
@@ -319,7 +320,7 @@ function ContentManagement() {
                   setCurrentPage(1);
                 }}
                 placeholder={`Search ${activeTab}...`}
-                className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="input-base w-full pl-10 pr-4 py-2 text-sm"
               />
             </div>
           </div>
@@ -331,13 +332,13 @@ function ContentManagement() {
                   setFilterStatus(e.target.value);
                   setCurrentPage(1);
                 }}
-                className="appearance-none pl-4 pr-8 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
+                className="input-base appearance-none pl-4 pr-8 py-2 text-sm bg-white"
               >
                 <option value="All">All Status</option>
                 <option value="Active">Active</option>
                 <option value="Inactive">Inactive</option>
               </select>
-              <Filter className="absolute left-1 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+              <Filter className="absolute left-1 top-1/2 transform -translate-y-1/2 h-4 w-4 text-surface-400" />
             </div>
             {activeTab === 'ebooks' && (
               <div className="relative">
@@ -347,7 +348,7 @@ function ContentManagement() {
                     setFilterCategory(e.target.value);
                     setCurrentPage(1);
                   }}
-                  className="appearance-none pl-4 pr-8 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
+                  className="input-base appearance-none pl-4 pr-8 py-2 text-sm bg-white"
                 >
                   <option value="All">All Categories</option>
                   <option value="Technical">Technical</option>
@@ -355,32 +356,30 @@ function ContentManagement() {
                   <option value="Design">Design</option>
                   <option value="Marketing">Marketing</option>
                 </select>
-                <Filter className="absolute left-1 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+                <Filter className="absolute left-1 top-1/2 transform -translate-y-1/2 h-4 w-4 text-surface-400" />
               </div>
             )}
           </div>
         </div>
 
-        {/* Table */}
-        <div className="mt-6 bg-white rounded-xl shadow-sm overflow-hidden">
+        <div className="card border border-surface-200 rounded-xl shadow-card overflow-hidden">
           <div className="overflow-x-auto">
-            <table className="min-w-full divide-y divide-gray-200">
+            <table className="min-w-full divide-y divide-surface-200">
               {renderTableHeader()}
               {renderTableBody()}
             </table>
           </div>
         </div>
 
-        {/* Pagination */}
         <div className="mt-6 flex items-center justify-between">
-          <p className="text-sm text-gray-500">
+          <p className="text-sm text-surface-500">
             Showing {((currentPage - 1) * itemsPerPage + 1)} to {Math.min(currentPage * itemsPerPage, filteredData.length)} of {filteredData.length} results
           </p>
           <div className="flex space-x-2">
             <button
               onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
               disabled={currentPage === 1}
-              className="px-3 py-2 border border-gray-300 rounded-md text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+              className="px-3 py-2 border border-surface-200 rounded-md text-sm font-medium text-surface-700 bg-white hover:bg-surface-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
             >
               <ChevronLeft className="h-4 w-4" />
             </button>
@@ -388,8 +387,10 @@ function ContentManagement() {
               <button
                 key={page}
                 onClick={() => setCurrentPage(page)}
-                className={`px-3 py-2 border border-gray-300 rounded-md text-sm font-medium ${
-                  currentPage === page ? 'bg-blue-600 text-white' : 'bg-white text-gray-700 hover:bg-gray-50'
+                className={`px-3 py-2 border rounded-md text-sm font-medium transition-colors ${
+                  currentPage === page 
+                    ? 'bg-brand-600 text-white border-brand-600' 
+                    : 'bg-white text-surface-700 border-surface-200 hover:bg-surface-50'
                 }`}
               >
                 {page}
@@ -398,7 +399,7 @@ function ContentManagement() {
             <button
               onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
               disabled={currentPage === totalPages}
-              className="px-3 py-2 border border-gray-300 rounded-md text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+              className="px-3 py-2 border border-surface-200 rounded-md text-sm font-medium text-surface-700 bg-white hover:bg-surface-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
             >
               <ChevronRight className="h-4 w-4" />
             </button>

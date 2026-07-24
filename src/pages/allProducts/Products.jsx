@@ -1,12 +1,12 @@
 import React from 'react'
 import { NavLink } from 'react-router-dom'
 import { Outlet } from 'react-router-dom'
-// import Button from '../../components/Button'
 import UpArrow from '../../svg/UpArrow'
 import axios from "axios";
 import { saveAs } from "file-saver";
-import { Download } from 'lucide-react';
+import { Download, Plus } from 'lucide-react';
 import {Tooltip, Button} from "@nextui-org/react";
+import { motion } from 'framer-motion';
 
 function Products() {
 
@@ -31,12 +31,11 @@ function Products() {
             throw new Error(`HTTP error! status: ${response.status}`);
         }
 
-        const blob = await response.blob(); // Convert the response to a Blob
+        const blob = await response.blob();
         const file = new Blob([blob], {
             type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
         });
 
-        // Use FileSaver.js or a similar library to download the file
         saveAs(file, "Product Details.xlsx");
     } catch (error) {
         console.error("Error downloading the Excel file:", error);
@@ -45,48 +44,65 @@ function Products() {
 
 
   return (
-    <div className='w-5/6 z-40 mx-auto py-8'>
-      
-      <div className='w-full flex justify-between'>
-        <h1 className='text-[32px] trajan'>PRODUCTS</h1>
+    <div className="p-8">
+      <div className="max-w-7xl mx-auto">
 
-        <div className='flex gap-4'>
-          <Tooltip content="Download Product Details">
-            <Button onClick={handleDownload} size="md" variant="light"><Download /></Button>
-          </Tooltip>
-          <NavLink to={'/product-upload'}>
-          <Button className={`bg-indigo-600 hover:bg-[#A8A3F4] p-3 flex gap-2 rounded-xl`}>                    
-            <UpArrow />
-            <p className='text-white times'>Upload Product</p>
-          </Button>
-        </NavLink>
-        </div>
-        
-      </div>
+        <motion.div
+          initial={{ opacity: 0, y: -20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.4 }}
+          className="flex items-center justify-between mb-6"
+        >
+          <h1 className="page-title">PRODUCTS</h1>
 
-        <div className='flex gap-8 pt-4 border-b-2'>
+          <div className="flex items-center gap-3">
+            <Tooltip content="Download Product Details">
+              <button onClick={handleDownload} className="btn-secondary flex items-center gap-2">
+                <Download size={18} />
+                <span>Download</span>
+              </button>
+            </Tooltip>
+            <NavLink to={'/product-upload'}>
+              <button className="btn-primary flex items-center gap-2">
+                <Plus size={18} />
+                <span>Upload Product</span>
+              </button>
+            </NavLink>
+          </div>
+        </motion.div>
 
-            {
-              productNavigation.map(item => <NavLink 
-                key={item.name} 
-                to={item.slug}
-                end
-                className={({isActive}) => 
-                  `${isActive? "border-b-4 border-[#285EFE]" : 
-                    "hover:border-b-4 hover:border-[#285EFE] transition duration-300"} 
-                    text-[18px] times`}
-              >
-                <Button size="md" variant="light">
-                  {item.name}
-                </Button>
-              </NavLink>
-              
-              )
-            }
-        </div>
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 0.3, delay: 0.1 }}
+          className="flex gap-8 border-b border-surface-200 mb-6"
+        >
+          {productNavigation.map(item => (
+            <NavLink
+              key={item.name}
+              to={item.slug}
+              end
+              className={({ isActive }) =>
+                `pb-3 text-sm font-semibold tracking-wide transition-colors duration-200 ${
+                  isActive
+                    ? 'border-b-2 border-brand-600 text-brand-700'
+                    : 'text-surface-500 hover:text-surface-700'
+                }`
+              }
+            >
+              {item.name}
+            </NavLink>
+          ))}
+        </motion.div>
 
-      <div>
-        <Outlet />
+        <motion.div
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.4, delay: 0.2 }}
+        >
+          <Outlet />
+        </motion.div>
+
       </div>
     </div>
   )
